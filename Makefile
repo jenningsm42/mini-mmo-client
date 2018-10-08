@@ -22,13 +22,16 @@ $(SRC_DIR)/%.pb.cc: $(PROTO_DIR)/%.proto
 	protoc -I=$(PROTO_DIR) --cpp_out=$(SRC_DIR) $<
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.pb.cc
+	@mkdir -p $(OBJ_DIR)
 	$(CXX) -c $< -o $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(PROTO_GEN_FILES)
+	@mkdir -p $(OBJ_DIR)
 	$(CXX) -c $< -o $@
 
 client: $(OBJ_FILES)
 	@echo '** Building the client'
+	@mkdir -p $(OUT_DIR)
 	$(CXX) -o $(OUT_DIR)/$@ $^ $(LIBS)
 	cp -r $(DATA_DIR) $(OUT_DIR)/
 
