@@ -1,0 +1,6 @@
+syntax = "proto3";
+
+message VersionResponse {
+    uint32 major_number = 1;
+    uint32 minor_number = 2;
+}
