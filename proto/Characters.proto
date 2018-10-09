@@ -1,0 +1,26 @@
+syntax = 'proto3';
+
+
+message CharactersResponse {
+    message Character {
+        uint32 character_id = 1;
+        string name = 2;
+        uint32 color = 3;
+        float x = 4;
+        float y = 5;
+    }
+    repeated Character characters = 1;
+}
+
+message CreateCharacterRequest {
+    string name = 1;
+    uint32 color = 2;
+}
+
+message CreateCharacterResponse {
+    bool success = 1;
+    uint32 character_id = 2;
+    float x = 3;
+    float y = 4;
+    string error_message = 5;
+}

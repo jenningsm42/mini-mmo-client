@@ -17,6 +17,7 @@ class TextField {
         sf::FloatRect getBoundingBox() const noexcept;
 
         std::string getInput() const noexcept;
+        void clearInput() noexcept;
 
     private:
         bool m_active;

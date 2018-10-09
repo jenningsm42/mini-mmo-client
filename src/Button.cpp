@@ -1,7 +1,7 @@
 #include "Button.hpp"
 #include "Scene.hpp"
 
-Button::Button(float width, std::string&& name) {
+Button::Button(float width, const std::string& name) {
     if (!m_font.loadFromFile("data/open_sans.ttf")) {
         throw new AssetMissingException("data/open_sans.ttf");
     }
@@ -18,6 +18,20 @@ Button::Button(float width, std::string&& name) {
     m_textBox.setOutlineColor(sf::Color::White);
 
     m_boundingBox = sf::FloatRect(0, 0, width, height);
+}
+
+Button::Button(const Button& other) {
+    if (!m_font.loadFromFile("data/open_sans.ttf")) {
+        throw new AssetMissingException("data/open_sans.ttf");
+    }
+
+    m_buttonText.setFont(m_font);
+    m_buttonText.setPosition(2.f, 0.f);
+    m_buttonText.setString(std::string(other.m_buttonText.getString()));
+
+    m_transform = sf::Transform(other.m_transform);
+    m_boundingBox = sf::FloatRect(other.m_boundingBox);
+    m_textBox = sf::RectangleShape(other.m_textBox);
 }
 
 void Button::draw(sf::RenderWindow& window) noexcept {

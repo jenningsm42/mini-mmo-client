@@ -6,7 +6,8 @@
 
 class Button {
     public:
-        Button(float width, std::string&& name);
+        Button(float width, const std::string& name);
+        Button(const Button&);
 
         void draw(sf::RenderWindow&) noexcept;
 

@@ -77,3 +77,7 @@ sf::FloatRect TextField::getBoundingBox() const noexcept {
 std::string TextField::getInput() const noexcept {
     return m_input;
 }
+
+void TextField::clearInput() noexcept {
+    m_input = "";
+}

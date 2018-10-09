@@ -3,10 +3,11 @@
 #include <SFML/Graphics.hpp>
 #include "InputHandler.hpp"
 #include "Socket.hpp"
+#include "Character.hpp"
 
 class Player {
     public:
-        Player();
+        Player(const Character&);
 
         void update(InputHandler&, Socket&, float deltaTime) noexcept;
         void draw(sf::RenderWindow&) noexcept;

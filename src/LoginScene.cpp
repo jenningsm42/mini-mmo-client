@@ -1,6 +1,6 @@
 #include "LoginScene.hpp"
 #include "Game.hpp"
-#include "GameScene.hpp"
+#include "CharacterScene.hpp"
 
 #include "Login.pb.h"
 #include "Register.pb.h"
@@ -38,7 +38,7 @@ void LoginScene::processMessages(std::queue<Message>& messages, Socket& socket) 
                 message.getMessage(loginResponse);
                 if (loginResponse.success()) {
                     std::cout << "Logged in!" << std::endl;
-                    m_game->setScene(std::make_shared<GameScene>(socket));
+                    m_game->setScene(std::make_shared<CharacterScene>(socket));
                     return;
                 } else {
                     std::cout << loginResponse.error_message() << std::endl;

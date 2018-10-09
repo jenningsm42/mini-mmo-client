@@ -9,6 +9,7 @@ enum class MessageType : uint16_t {
     LoginResponse = 3,
     RegisterRequest = 4,
     RegisterResponse = 5,
+
     PlayerMove = 6,
     OtherPlayerMove = 7,
     PlayerStop = 8,
@@ -17,6 +18,13 @@ enum class MessageType : uint16_t {
     PlayerLeave = 11,
     PlayersRequest = 12,
     PlayersResponse = 13,
+    JoinRequest = 14,
+    JoinResponse = 15,
+
+    CharactersRequest = 16,
+    CharactersResponse = 17,
+    CreateCharacterRequest = 18,
+    CreateCharacterResponse = 19,
 };
 
 #endif

@@ -12,7 +12,8 @@ class PlayerPool {
         void update(float deltaTime) noexcept;
         void draw(sf::RenderWindow&) noexcept;
 
-        void addPlayer(uint32_t id, float x, float y, float velocityX, float velocityY) noexcept;
+        void addPlayer(uint32_t id, float x, float y, float velocityX, float velocityY,
+                const sf::Color&, const std::string& name) noexcept;
         void removePlayer(uint32_t id) noexcept;
 
     private:

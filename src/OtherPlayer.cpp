@@ -1,10 +1,12 @@
 #include "OtherPlayer.hpp"
 
-OtherPlayer::OtherPlayer(float x, float y, float velocityX, float velocityY) {
+OtherPlayer::OtherPlayer(float x, float y, float velocityX, float velocityY,
+        const sf::Color& color, const std::string& name) {
     m_sprite.setRadius(30.f);
-    m_sprite.setFillColor(sf::Color::Green);
+    m_sprite.setFillColor(color);
     m_sprite.setPosition(x, y);
     m_velocity = sf::Vector2f(velocityX, velocityY);
+    m_name = name;
 }
 
 void OtherPlayer::update(float deltaTime) noexcept {
