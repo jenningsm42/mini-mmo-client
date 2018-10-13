@@ -1,12 +1,13 @@
 #ifndef GAMESCENE_HPP
 #define GAMESCENE_HPP
 #include "Scene.hpp"
+#include "Character.hpp"
 #include "Player.hpp"
 #include "PlayerPool.hpp"
 
 class GameScene : public Scene {
     public:
-        GameScene(Socket&);
+        GameScene(Socket&, const Character&);
 
         void processMessages(std::queue<Message>&, Socket&) override;
         void update(InputHandler&, Socket&, float deltaTime) noexcept override;

@@ -4,6 +4,8 @@ message PlayerJoin {
     uint32 player_id = 1;
     float x = 2;
     float y = 3;
+    uint32 color = 4;
+    string name = 5;
 }
 
 message PlayerLeave {
@@ -17,6 +19,12 @@ message PlayersResponse {
         float y = 3;
         float velocity_x = 4;
         float velocity_y = 5;
+        uint32 color = 6;
+        string name = 7;
     }
     repeated Player players = 1;
+}
+
+message JoinRequest {
+    uint32 character_id = 1;
 }

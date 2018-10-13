@@ -1,8 +1,12 @@
 #include "GameScene.hpp"
 #include "MessageTypes.hpp"
+#include "PlayerJoin.pb.h"
 
-GameScene::GameScene(Socket& socket) {
-    socket.sendMessage(Message(MessageType::PlayersRequest));
+GameScene::GameScene(Socket& socket, const Character& character)
+    : m_player(character) {
+    JoinRequest joinRequest;
+    joinRequest.set_character_id(character.getId());
+    socket.sendMessage(Message(MessageType::JoinRequest, joinRequest));
 }
 
 void GameScene::processMessages(std::queue<Message>& messages, Socket&) {

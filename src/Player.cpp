@@ -4,10 +4,10 @@
 
 #include "PlayerMove.pb.h"
 
-Player::Player() {
+Player::Player(const Character& character) {
     m_sprite.setRadius(30.f);
-    m_sprite.setFillColor(sf::Color::White);
-    m_sprite.setPosition(300.f, 300.f);
+    m_sprite.setFillColor(character.getColor());
+    m_sprite.setPosition(character.getPosition());
 }
 
 void Player::update(InputHandler& input, Socket& socket, float deltaTime) noexcept {
@@ -48,15 +48,15 @@ void Player::update(InputHandler& input, Socket& socket, float deltaTime) noexce
     if (m_velocity != m_previousVelocity) {
         if (m_velocity != sf::Vector2f()) {
             PlayerMove playerMove;
-            playerMove.set_current_x(m_sprite.getPosition().x);
-            playerMove.set_current_y(m_sprite.getPosition().y);
+            playerMove.set_x(m_sprite.getPosition().x);
+            playerMove.set_y(m_sprite.getPosition().y);
             playerMove.set_velocity_x(m_velocity.x);
             playerMove.set_velocity_y(m_velocity.y);
             socket.sendMessage(Message(MessageType::PlayerMove, playerMove));
         } else {
             PlayerStop playerStop;
-            playerStop.set_stopped_x(m_sprite.getPosition().x);
-            playerStop.set_stopped_y(m_sprite.getPosition().y);
+            playerStop.set_x(m_sprite.getPosition().x);
+            playerStop.set_y(m_sprite.getPosition().y);
             socket.sendMessage(Message(MessageType::PlayerStop, playerStop));
         }
     }

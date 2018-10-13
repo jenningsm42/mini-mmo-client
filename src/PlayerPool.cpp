@@ -10,15 +10,15 @@ void PlayerPool::processMessage(const Message& message) noexcept {
         case MessageType::PlayersResponse: {
             PlayersResponse playersResponse;
             message.getMessage(playersResponse);
-            std::cout << playersResponse.players_size() << std::endl;
-            for (int i = 0; i < playersResponse.players_size(); i++) {
-                auto player = playersResponse.players(i);
+            for (auto& player : playersResponse.players()) {
                 addPlayer(
                     player.player_id(),
                     player.x(),
                     player.y(),
                     player.velocity_x(),
-                    player.velocity_y());
+                    player.velocity_y(),
+                    sf::Color(player.color()),
+                    player.name());
             }
             break;
         }
@@ -27,8 +27,8 @@ void PlayerPool::processMessage(const Message& message) noexcept {
             message.getMessage(otherPlayerMove);
             try {
             m_players.at(otherPlayerMove.player_id()).setVelocity(
-                otherPlayerMove.starting_x(),
-                otherPlayerMove.starting_y(),
+                otherPlayerMove.x(),
+                otherPlayerMove.y(),
                 otherPlayerMove.velocity_x(),
                 otherPlayerMove.velocity_y());
             }
@@ -44,8 +44,8 @@ void PlayerPool::processMessage(const Message& message) noexcept {
             message.getMessage(otherPlayerStop);
             try {
                 m_players.at(otherPlayerStop.player_id()).setVelocity(
-                    otherPlayerStop.stopped_x(),
-                    otherPlayerStop.stopped_y(),
+                    otherPlayerStop.x(),
+                    otherPlayerStop.y(),
                     0.f,
                     0.f);
             }
@@ -59,7 +59,8 @@ void PlayerPool::processMessage(const Message& message) noexcept {
         case MessageType::PlayerJoin: {
             PlayerJoin playerJoin;
             message.getMessage(playerJoin);
-            addPlayer(playerJoin.player_id(), playerJoin.x(), playerJoin.y(), 0.f, 0.f);
+            addPlayer(playerJoin.player_id(), playerJoin.x(), playerJoin.y(), 0.f, 0.f,
+                sf::Color(playerJoin.color()), playerJoin.name());
             break;
         }
         case MessageType::PlayerLeave: {
@@ -84,8 +85,9 @@ void PlayerPool::draw(sf::RenderWindow& window) noexcept {
     }
 }
 
-void PlayerPool::addPlayer(uint32_t id, float x, float y, float velocityX, float velocityY) noexcept {
-    m_players.emplace(id, OtherPlayer(x, y, velocityX, velocityY));
+void PlayerPool::addPlayer(uint32_t id, float x, float y, float velocityX, float velocityY,
+        const sf::Color& color, const std::string& name) noexcept {
+    m_players.emplace(id, OtherPlayer(x, y, velocityX, velocityY, color, name));
 }
 
 void PlayerPool::removePlayer(uint32_t id) noexcept {
