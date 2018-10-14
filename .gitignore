@@ -1,6 +1,11 @@
 build/
 obj/
+.vs/
+libraries/
+x64/
 
 *.pb.*
 
 .ycm_extra_conf.py
+mini-mmo-client.vcxproj.user
+protoc.exe

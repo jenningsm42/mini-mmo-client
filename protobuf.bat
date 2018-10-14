@@ -1,0 +1,1 @@
+for /f %%i in ('dir /b proto\*.proto') do protoc -I=proto --cpp_out=src proto\%%i
