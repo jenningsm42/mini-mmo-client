@@ -7,6 +7,7 @@
 #endif
 
 #include <iomanip>
+#include <sstream>
 
 Message::Message(const MessageType& type, const google::protobuf::Message& msg) : m_type(type) {
     auto size = msg.ByteSizeLong();
