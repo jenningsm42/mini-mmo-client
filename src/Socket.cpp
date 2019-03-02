@@ -30,7 +30,7 @@ Socket::Socket() : m_socketDescriptor(-1) {
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
 
-    result = getaddrinfo("10.0.0.44", "1337", &hints, &serverInfo);
+    result = getaddrinfo("127.0.0.1", "1337", &hints, &serverInfo);
     if (result != 0) {
         throw SocketException("Unable to get address info");
     }

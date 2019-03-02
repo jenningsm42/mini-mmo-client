@@ -1,0 +1,61 @@
+sudo: required
+language: cpp
+dist: xenial
+env:
+    - PROTOBUF_VERSION="3.7.0"
+branches:
+    only:
+        - master
+addons:
+    apt:
+        sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: 'ppa:texus/tgui-0.8'
+        update: true
+        packages:
+            - autoconf
+            - automake
+            - curl
+            - freeglut3-dev
+            - g++-7
+            - libegl1-mesa-dev
+            - libflac-dev
+            - libfreetype6-dev
+            - libjpeg8-dev
+            - libogg-dev
+            - libopenal-dev
+            - libpthread-stubs0-dev
+            - libsndfile1-dev
+            - libtgui-dev
+            - libtool
+            - libudev-dev
+            - libx11-dev
+            - libxcb-image0-dev
+            - libxrandr-dev
+            - make
+            - unzip
+before_install:
+    # SFML
+    - git clone https://github.com/SFML/SFML.git
+    - cd SFML
+    - cmake .
+    - sudo make install
+    - cd ..
+    # Protobuf
+    - wget https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOBUF_VERSION}/protobuf-cpp-${PROTOBUF_VERSION}.tar.gz
+    - tar -xzvf protobuf-cpp-${PROTOBUF_VERSION}.tar.gz
+    - cd protobuf-${PROTOBUF_VERSION}
+    - ./configure
+    - sudo make install
+    - sudo ldconfig
+    - cd ..
+jobs:
+    include:
+        - stage: build
+          name: build
+          script:
+              - mkdir build && cd build
+              - cmake ..
+              - make
+stages:
+    - build
