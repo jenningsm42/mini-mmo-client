@@ -10,7 +10,6 @@ addons:
     apt:
         sources:
             - ubuntu-toolchain-r-test
-            - sourceline: 'ppa:texus/tgui-0.8'
         update: true
         packages:
             - autoconf
@@ -26,7 +25,6 @@ addons:
             - libopenal-dev
             - libpthread-stubs0-dev
             - libsndfile1-dev
-            - libtgui-dev
             - libtool
             - libudev-dev
             - libx11-dev
@@ -39,18 +37,25 @@ before_install:
     - CXX="g++-7"
     # SFML
     - git clone https://github.com/SFML/SFML.git
-    - cd SFML
+    - pushd SFML
     - cmake .
     - sudo make install
-    - cd ..
+    - popd
+    # TGUI - APT package uses SFML 2.3, so compile from source
+    - git clone https://github.com/texus/TGUI.git
+    - pushd TGUI
+    - git checkout 0.8
+    - cmake .
+    - sudo make install
+    - popd
     # Protobuf
     - wget https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOBUF_VERSION}/protobuf-cpp-${PROTOBUF_VERSION}.tar.gz
     - tar -xzvf protobuf-cpp-${PROTOBUF_VERSION}.tar.gz
-    - cd protobuf-${PROTOBUF_VERSION}
+    - pushd protobuf-${PROTOBUF_VERSION}
     - ./configure
     - sudo make install
     - sudo ldconfig
-    - cd ..
+    - popd
 jobs:
     include:
         - stage: build
