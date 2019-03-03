@@ -1,8 +1,10 @@
 build/
 obj/
-.vs/
 libraries/
 x64/
+cmake-build-debug/
+.vs/
+.idea/
 
 *.pb.*
 

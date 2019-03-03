@@ -8,35 +8,35 @@
 
 #ifdef _WIN32
 class WSAStartupException : public std::exception {
-    public:
-        const char* what() const noexcept override {
-            return "WSA failed to initialize";
-        }
+public:
+    const char* what() const noexcept override {
+        return "WSA failed to initialize";
+    }
 };
-#endif
+#endif // _WIN32
 
 class SocketException : public std::exception {
-    public:
-        SocketException(const std::string& message) : msg(message) {}
-        const char* what() const noexcept override {
-            return msg.c_str();
-        }
+public:
+    SocketException(const std::string& message) : msg(message) {}
+    const char* what() const noexcept override {
+        return msg.c_str();
+    }
 
-    private:
-        std::string msg;
+private:
+    std::string msg;
 };
 
 class Socket {
-    public:
-        Socket();
-        Socket(const Socket&) = delete;
-        ~Socket();
+public:
+    Socket();
+    Socket(const Socket&) = delete;
+    ~Socket();
 
-        void sendMessage(const Message&);
-        std::queue<Message> pollMessages();
+    void sendMessage(const Message&);
+    std::queue<Message> pollMessages();
 
-    private:
-        int m_socketDescriptor;
+private:
+    int m_socketDescriptor;
 };
 
-#endif
+#endif // SOCKET_HPP

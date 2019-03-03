@@ -1,101 +1,81 @@
 #include "LoginScene.hpp"
 #include "Game.hpp"
-#include "CharacterScene.hpp"
+#include "CharacterSelectionScene.hpp"
 
 #include "Login.pb.h"
 #include "Register.pb.h"
 
-LoginScene::LoginScene() : m_usernameInput(200.f), m_passwordInput(200.f),
-    m_registerButton(200.f, "Register"), m_loginButton(200.f, "Login") {
-    if (!m_font.loadFromFile("data/open_sans.ttf")) {
-        throw new AssetMissingException("data/open_sans.ttf");
-    }
+void LoginScene::initialize(Game& game) {
+    auto& gui = game.getGui();
 
-    m_usernameText.setFont(m_font);
-    m_passwordText.setFont(m_font);
+    auto usernameEditBox = tgui::EditBox::create();
+    usernameEditBox->setSize({"30%", "5%"});
+    usernameEditBox->setPosition({"&.width / 4 - width / 2", "&.height / 4 - height / 2"});
+    usernameEditBox->setDefaultText("Username");
+    gui.add(usernameEditBox, "usernameField");
 
-    m_usernameText.setString("Username:");
-    m_passwordText.setString("Password:");
+    auto passwordEditBox = tgui::EditBox::create();
+    passwordEditBox->setSize({"usernameField.width", "usernameField.height"});
+    passwordEditBox->setPosition({"usernameField.left", "usernameField.bottom + 10"});
+    passwordEditBox->setDefaultText("Password");
+    passwordEditBox->setPasswordCharacter('*');
+    gui.add(passwordEditBox, "passwordField");
 
-    m_usernameText.setPosition(100.f, 100.f);
-    m_passwordText.setPosition(100.f, 150.f);
+    auto registerButton = tgui::Button::create("Register");
+    registerButton->setSize({"usernameField.width / 2 - 5", "usernameField.height"});
+    registerButton->setPosition({"passwordField.left", "passwordField.bottom + 10"});
+    gui.add(registerButton, "registerButton");
 
-    m_usernameInput.setPosition(270.f, 100.f);
-    m_passwordInput.setPosition(270.f, 150.f);
+    auto loginButton = tgui::Button::create("Login");
+    loginButton->setSize({"usernameField.width / 2 - 5", "usernameField.height"});
+    loginButton->setPosition({"registerButton.right + 10", "registerButton.top"});
+    gui.add(loginButton);
 
-    m_usernameInput.setActive(true);
+    auto& socket = game.getSocket();
 
-    m_registerButton.setPosition(100.f, 200.f);
-    m_loginButton.setPosition(330.f, 200.f);
-}
-
-void LoginScene::processMessages(std::queue<Message>& messages, Socket& socket) {
-    while (!messages.empty()) {
-        auto message = messages.front();
-        switch (message.getType()) {
-            case MessageType::LoginResponse: {
-                LoginResponse loginResponse;
-                message.getMessage(loginResponse);
-                if (loginResponse.success()) {
-                    std::cout << "Logged in!" << std::endl;
-                    m_game->setScene(std::make_shared<CharacterScene>(socket));
-                    return;
-                } else {
-                    std::cout << loginResponse.error_message() << std::endl;
-                }
-                break;
-            }
-            case MessageType::RegisterResponse: {
-                RegisterResponse registerResponse;
-                message.getMessage(registerResponse);
-                if (registerResponse.success()) {
-                    std::cout << "Registered!" << std::endl;
-                } else {
-                    std::cout << registerResponse.error_message() << std::endl;
-                }
-                break;
-            }
-            default: break;
-        }
-        messages.pop();
-    }
-}
-
-void LoginScene::update(InputHandler& input, Socket& socket, float deltaTime) noexcept {
-    if (input.getMouseClicked(sf::Mouse::Left)) {
-        auto mousePosition = input.getMousePosition();
-        if (m_usernameInput.getBoundingBox().contains(mousePosition.x, mousePosition.y)) {
-            m_usernameInput.setActive(true, &input);
-            m_passwordInput.setActive(false, &input);
-        } else if (m_passwordInput.getBoundingBox().contains(mousePosition.x, mousePosition.y)) {
-            m_passwordInput.setActive(true, &input);
-            m_usernameInput.setActive(false, &input);
-        }
-    }
-
-    if (m_registerButton.getClicked(input)) {
+    // Button signals
+    registerButton->connect("pressed", [&](
+        tgui::EditBox::Ptr usernameEditBox, tgui::EditBox::Ptr passwordEditBox, Socket& socket
+    ) {
         RegisterRequest registerRequest;
-        registerRequest.set_username(m_usernameInput.getInput());
-        registerRequest.set_password(m_passwordInput.getInput());
+        registerRequest.set_username(usernameEditBox->getText().toAnsiString());
+        registerRequest.set_password(passwordEditBox->getText().toAnsiString());
+
         socket.sendMessage(Message(MessageType::RegisterRequest, registerRequest));
-    }
+    }, usernameEditBox, passwordEditBox, std::ref(socket));
 
-    if (m_loginButton.getClicked(input)) {
+    loginButton->connect("pressed", [&](
+        tgui::EditBox::Ptr usernameEditBox, tgui::EditBox::Ptr passwordEditBox, Socket& socket
+    ) {
         LoginRequest loginRequest;
-        loginRequest.set_username(m_usernameInput.getInput());
-        loginRequest.set_password(m_passwordInput.getInput());
+        loginRequest.set_username(usernameEditBox->getText().toAnsiString());
+        loginRequest.set_password(passwordEditBox->getText().toAnsiString());
+
         socket.sendMessage(Message(MessageType::LoginRequest, loginRequest));
-    }
+    }, usernameEditBox, passwordEditBox, std::ref(socket));
 
-    m_usernameInput.update(input, deltaTime);
-    m_passwordInput.update(input, deltaTime);
-}
+    // Message handlers
+    addMessageHandler(MessageType::LoginResponse, [&](Game& game, const Message& message) {
+        LoginResponse loginResponse;
+        message.getMessage(loginResponse);
 
-void LoginScene::draw(sf::RenderWindow& window) noexcept {
-    window.draw(m_usernameText);
-    window.draw(m_passwordText);
-    m_usernameInput.draw(window);
-    m_passwordInput.draw(window);
-    m_loginButton.draw(window);
-    m_registerButton.draw(window);
+        if (loginResponse.success()) {
+            std::cout << "Logged in!" << std::endl;
+            game.getSceneHandler().setScene(std::make_unique<CharacterSelectionScene>());
+            return;
+        } else {
+            std::cout << loginResponse.error_message() << std::endl;
+        }
+    });
+
+    addMessageHandler(MessageType::RegisterResponse, [&](Game&, const Message& message) {
+        RegisterResponse registerResponse;
+        message.getMessage(registerResponse);
+
+        if (registerResponse.success()) {
+            std::cout << "Registered!" << std::endl;
+        } else {
+            std::cout << registerResponse.error_message() << std::endl;
+        }
+    });
 }

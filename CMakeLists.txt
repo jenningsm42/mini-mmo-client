@@ -8,9 +8,12 @@ project(MiniMMOClient
 set(CMAKE_CXX_STANDARD 14)
 
 set(SOURCE_FILES
-        src/Button.cpp
+        src/AnimatedSprite.cpp
+        src/AssetCache.cpp
         src/Character.cpp
-        src/CharacterScene.cpp
+        src/CharacterCreationScene.cpp
+        src/CharacterPreview.cpp
+        src/CharacterSelectionScene.cpp
         src/Game.cpp
         src/GameScene.cpp
         src/InputHandler.cpp
@@ -21,8 +24,8 @@ set(SOURCE_FILES
         src/Player.cpp
         src/PlayerPool.cpp
         src/Scene.cpp
-        src/Socket.cpp
-        src/TextField.cpp)
+        src/SceneHandler.cpp
+        src/Socket.cpp)
 
 set(PROTO_FILES
         proto/Characters.proto

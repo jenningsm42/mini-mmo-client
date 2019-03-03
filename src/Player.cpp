@@ -1,16 +1,21 @@
-#include "Player.hpp"
-#include "Message.hpp"
 #include <cmath>
+
+#include "Game.hpp"
+#include "Message.hpp"
+#include "Player.hpp"
 
 #include "PlayerMove.pb.h"
 
 Player::Player(const Character& character) {
-    m_sprite.setRadius(30.f);
+    m_sprite.setRadius(m_radius);
     m_sprite.setFillColor(character.getColor());
     m_sprite.setPosition(character.getPosition());
 }
 
-void Player::update(InputHandler& input, Socket& socket, float deltaTime) noexcept {
+void Player::update(Game& game, const GameObjectCollection&, float deltaTime) noexcept {
+    auto& input = game.getInputHandler();
+    auto& socket = game.getSocket();
+
     auto up = input.getKeyDown(sf::Keyboard::W);
     auto down = input.getKeyDown(sf::Keyboard::S);
     auto left = input.getKeyDown(sf::Keyboard::A);
@@ -52,11 +57,13 @@ void Player::update(InputHandler& input, Socket& socket, float deltaTime) noexce
             playerMove.set_y(m_sprite.getPosition().y);
             playerMove.set_velocity_x(m_velocity.x);
             playerMove.set_velocity_y(m_velocity.y);
+
             socket.sendMessage(Message(MessageType::PlayerMove, playerMove));
         } else {
             PlayerStop playerStop;
             playerStop.set_x(m_sprite.getPosition().x);
             playerStop.set_y(m_sprite.getPosition().y);
+
             socket.sendMessage(Message(MessageType::PlayerStop, playerStop));
         }
     }
@@ -64,6 +71,6 @@ void Player::update(InputHandler& input, Socket& socket, float deltaTime) noexce
     m_sprite.move(m_velocity.x * deltaTime, m_velocity.y * deltaTime);
 }
 
-void Player::draw(sf::RenderWindow& window) noexcept {
-    window.draw(m_sprite);
+void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+    target.draw(m_sprite, states);
 }

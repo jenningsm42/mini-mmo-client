@@ -4,7 +4,7 @@
 #include <winsock.h>
 #else
 #include <arpa/inet.h>
-#endif
+#endif // _WIN32
 
 #include <iomanip>
 #include <sstream>

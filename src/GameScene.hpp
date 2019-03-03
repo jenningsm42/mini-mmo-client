@@ -1,21 +1,17 @@
 #ifndef GAMESCENE_HPP
 #define GAMESCENE_HPP
+
 #include "Scene.hpp"
 #include "Character.hpp"
-#include "Player.hpp"
-#include "PlayerPool.hpp"
 
 class GameScene : public Scene {
-    public:
-        GameScene(Socket&, const Character&);
+public:
+    GameScene(const Character&);
 
-        void processMessages(std::queue<Message>&, Socket&) override;
-        void update(InputHandler&, Socket&, float deltaTime) noexcept override;
-        void draw(sf::RenderWindow&) noexcept override;
+    virtual void initialize(Game&) override;
 
-    private:
-        Player m_player;
-        PlayerPool m_playerPool;
+private:
+    Character m_character;
 };
 
-#endif
+#endif // GAMESCENE_HPP
