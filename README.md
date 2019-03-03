@@ -1,5 +1,5 @@
 # mini-mmo-client
-[![Build Status](https://travis-ci.org/jenningsm42/mini-mmo-client.svg?branch=master)](https://travis-ci.org/jenningsm42/mini-mmo-client)
+[![Build Status](https://travis-ci.com/jenningsm42/mini-mmo-client.svg?branch=master)](https://travis-ci.com/jenningsm42/mini-mmo-client)
 
 The client for a very simple open world (not massively) multiplayer online game
 
