@@ -1,35 +1,44 @@
-#ifndef SCENE_H
-#define SCENE_H
+#ifndef SCENE_HPP
+#define SCENE_HPP
+
+#include <functional>
+#include <queue>
+
 #include <SFML/Graphics.hpp>
 
-#include "InputHandler.hpp"
+#include "GameObject.hpp"
 #include "Message.hpp"
-#include "Socket.hpp"
+#include "MessageTypes.hpp"
 
 class Game;
+class Socket;
 
-class AssetMissingException : public std::exception {
-    public:
-        AssetMissingException(const std::string& assetFile) : m_assetFile(assetFile) {}
+using MessageHandler = std::function<void(Game&, const Message&)>;
+using MessageHandlerMap = std::unordered_map<MessageType, MessageHandler>;
 
-        const char* what() const noexcept override {
-            return ("Unable to load file: " + m_assetFile).c_str();
-        }
-
-    private:
-        std::string m_assetFile;
-};
+using GameObjectDrawOrder = std::map<int, std::vector<std::shared_ptr<GameObject>>>;
 
 class Scene {
-    public:
-        virtual void processMessages(std::queue<Message>&, Socket&) = 0;
-        virtual void update(InputHandler&, Socket&, float deltaTime) noexcept = 0;
-        virtual void draw(sf::RenderWindow&) noexcept = 0;
+public:
+    virtual void initialize(Game&) = 0;
 
-        void setGame(Game*);
+    bool handleMessage(Game&, const Message&);
 
-    protected:
-        Game* m_game;
+    void update(Game&, float deltaTime) noexcept;
+
+    void draw(sf::RenderWindow&) noexcept;
+
+    std::weak_ptr<GameObject> getObject(const std::string& name) noexcept;
+
+protected:
+    GameObjectCollection m_objects;
+
+    void addObject(const std::string& name, std::shared_ptr<GameObject>, int zIndex = 0);
+    void addMessageHandler(MessageType, MessageHandler);
+
+private:
+    MessageHandlerMap m_handlers;
+    GameObjectDrawOrder m_objectsDrawOrder;
 };
 
-#endif
+#endif // SCENE_HPP

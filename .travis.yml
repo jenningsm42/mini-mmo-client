@@ -35,6 +35,8 @@ addons:
             - make
             - unzip
 before_install:
+    # Use new version of g++
+    - CXX="g++-7"
     # SFML
     - git clone https://github.com/SFML/SFML.git
     - cd SFML
@@ -55,7 +57,7 @@ jobs:
           name: build
           script:
               - mkdir build && cd build
-              - cmake ..
+              - cmake -DCMAKE_CXX_COMPILER=/usr/bin/g++-7 ..
               - make
 stages:
     - build

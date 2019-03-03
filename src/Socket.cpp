@@ -9,7 +9,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-#endif
+#endif // _WIN32
 
 #include <cstring>
 
@@ -22,7 +22,7 @@ Socket::Socket() : m_socketDescriptor(-1) {
     if (result != 0) {
         throw WSAStartupException();
     }
-#endif
+#endif // _WIN32
 
     addrinfo hints = {};
     addrinfo *serverInfo;
@@ -79,7 +79,7 @@ std::queue<Message> Socket::pollMessages() {
     events.events = POLLRDNORM;
 #else
     events.events = POLLIN;
-#endif
+#endif // _WIN32
 
     std::queue<Message> messages;
 
@@ -89,7 +89,7 @@ std::queue<Message> Socket::pollMessages() {
         result = WSAPoll(&events, 1, 0);
 #else
         result = poll(&events, 1, 0);
-#endif
+#endif // _WIN32
         if (result == -1) {
             throw SocketException("Unable to poll for messages");
         } else if (result > 0) {

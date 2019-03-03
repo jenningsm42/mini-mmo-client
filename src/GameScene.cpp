@@ -1,37 +1,41 @@
+#include "Game.hpp"
 #include "GameScene.hpp"
 #include "MessageTypes.hpp"
+#include "Player.hpp"
+#include "PlayerPool.hpp"
+
 #include "PlayerJoin.pb.h"
 
-GameScene::GameScene(Socket& socket, const Character& character)
-    : m_player(character) {
+GameScene::GameScene(const Character& character) : m_character(character) {
+}
+
+void GameScene::initialize(Game& game) {
+    auto& socket = game.getSocket();
+
     JoinRequest joinRequest;
-    joinRequest.set_character_id(character.getId());
+    joinRequest.set_character_id(m_character.getId());
+
     socket.sendMessage(Message(MessageType::JoinRequest, joinRequest));
-}
 
-void GameScene::processMessages(std::queue<Message>& messages, Socket&) {
-    while (!messages.empty()) {
-        auto message = messages.front();
-        switch (message.getType()) {
-            case MessageType::PlayersResponse:
-            case MessageType::OtherPlayerMove:
-            case MessageType::OtherPlayerStop:
-            case MessageType::PlayerJoin:
-            case MessageType::PlayerLeave:
-                m_playerPool.processMessage(message);
-                break;
-            default: break;
-        }
-        messages.pop();
+    auto player = std::make_shared<Player>(m_character);
+    auto playerPool = std::make_shared<PlayerPool>();
+
+    MessageType playerPoolMessageTypes[] = {
+        MessageType::PlayersResponse,
+        MessageType::PlayerJoin,
+        MessageType::PlayerLeave,
+        MessageType::OtherPlayerMove,
+        MessageType::OtherPlayerStop
+    };
+
+    for (auto& type : playerPoolMessageTypes) {
+        addMessageHandler(type, std::bind(
+            &PlayerPool::handleMessage,
+            playerPool,
+            std::placeholders::_1,
+            std::placeholders::_2));
     }
-}
 
-void GameScene::update(InputHandler& input, Socket& socket, float deltaTime) noexcept {
-    m_playerPool.update(deltaTime);
-    m_player.update(input, socket, deltaTime);
-}
-
-void GameScene::draw(sf::RenderWindow& window) noexcept {
-    m_playerPool.draw(window);
-    m_player.draw(window);
+    addObject("player", player);
+    addObject("playerPool", playerPool);
 }

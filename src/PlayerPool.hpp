@@ -1,23 +1,44 @@
 #ifndef PLAYERPOOL_HPP
 #define PLAYERPOOL_HPP
+
 #include <unordered_map>
-#include "OtherPlayer.hpp"
+
+#include "GameObject.hpp"
 #include "Message.hpp"
+#include "OtherPlayer.hpp"
 
-class PlayerPool {
-    public:
-        PlayerPool();
+#include "PlayerJoin.pb.h"
+#include "PlayerMove.pb.h"
 
-        void processMessage(const Message&) noexcept;
-        void update(float deltaTime) noexcept;
-        void draw(sf::RenderWindow&) noexcept;
+class PlayerPool : public GameObject {
+public:
+    void handleMessage(Game&, const Message&) noexcept;
 
-        void addPlayer(uint32_t id, float x, float y, float velocityX, float velocityY,
-                const sf::Color&, const std::string& name) noexcept;
-        void removePlayer(uint32_t id) noexcept;
+    virtual void update(Game&, const GameObjectCollection&, float deltaTime) noexcept override;
 
-    private:
-        std::unordered_map<uint32_t, OtherPlayer> m_players;
+    void addPlayer(
+        uint32_t id,
+        float x,
+        float y,
+        float velocityX,
+        float velocityY,
+        const sf::Color&,
+        const std::string& name) noexcept;
+
+    void removePlayer(uint32_t id) noexcept;
+
+private:
+    std::unordered_map<uint32_t, OtherPlayer> m_players;
+
+    virtual void draw(sf::RenderTarget&, sf::RenderStates) const override;
+
+    void handlePlayersResponse(const PlayersResponse&);
+
+    void handlePlayerJoin(const PlayerJoin&);
+    void handlePlayerLeave(const PlayerLeave&);
+
+    void handleOtherPlayerMove(const OtherPlayerMove&);
+    void handleOtherPlayerStop(const OtherPlayerStop&);
 };
 
-#endif
+#endif // PLAYERPOOL_HPP

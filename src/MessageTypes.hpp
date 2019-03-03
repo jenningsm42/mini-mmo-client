@@ -1,5 +1,6 @@
-#ifndef MESSAGE_TYPES_HPP
-#define MESSAGE_TYPES_HPP
+#ifndef MESSAGETYPES_HPP
+#define MESSAGETYPES_HPP
+
 #include <cstdint>
 
 enum class MessageType : uint16_t {
@@ -27,4 +28,4 @@ enum class MessageType : uint16_t {
     CreateCharacterResponse = 19,
 };
 
-#endif
+#endif // MESSAGETYPES_HPP

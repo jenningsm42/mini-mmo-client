@@ -1,21 +1,32 @@
 #ifndef OTHERPLAYER_HPP
 #define OTHERPLAYER_HPP
+
 #include <SFML/Graphics.hpp>
 
-class OtherPlayer {
-    public:
-        OtherPlayer(float x, float y, float velocityX, float velocityY,
-            const sf::Color&, const std::string& name);
+#include "GameObject.hpp"
 
-        void update(float deltaTime) noexcept;
-        void draw(sf::RenderWindow&) noexcept;
+class OtherPlayer : public GameObject {
+public:
+    OtherPlayer(
+        float x,
+        float y,
+        float velocityX,
+        float velocityY,
+        const sf::Color&,
+        const std::string& name);
 
-        void setVelocity(float x, float y, float velocityX, float velocityY) noexcept;
+    virtual void update(Game&, const GameObjectCollection&, float deltaTime) noexcept override;
 
-    private:
-        sf::CircleShape m_sprite;
-        sf::Vector2f m_velocity;
-        std::string m_name;
+    void setVelocity(float x, float y, float velocityX, float velocityY) noexcept;
+
+    operator std::string() const noexcept;
+
+private:
+    sf::CircleShape m_sprite;
+    sf::Vector2f m_velocity;
+    std::string m_name;
+
+    virtual void draw(sf::RenderTarget&, sf::RenderStates) const override;
 };
 
-#endif
+#endif // OTHERPLAYER_HPP
