@@ -49,6 +49,14 @@ void PlayerPool::update(
     }
 }
 
+std::string PlayerPool::getPlayerName(uint32_t id) noexcept {
+    if (m_players.find(id) == m_players.end()) {
+        return "";
+    }
+
+    return m_players.at(id).getName();
+}
+
 void PlayerPool::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     for (auto& player : m_players) {
         target.draw(player.second, states);

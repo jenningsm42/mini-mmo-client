@@ -6,13 +6,18 @@
 
 #include "PlayerMove.pb.h"
 
-Player::Player(const Character& character) {
+Player::Player(const Character& character) : m_controlsEnabled(true) {
     m_sprite.setRadius(m_radius);
     m_sprite.setFillColor(character.getColor());
     m_sprite.setPosition(character.getPosition());
+    m_sprite.setOrigin(m_radius, m_radius);
 }
 
 void Player::update(Game& game, const GameObjectCollection&, float deltaTime) noexcept {
+    if (!m_controlsEnabled) {
+        return;
+    }
+
     auto& input = game.getInputHandler();
     auto& socket = game.getSocket();
 
@@ -69,6 +74,14 @@ void Player::update(Game& game, const GameObjectCollection&, float deltaTime) no
     }
 
     m_sprite.move(m_velocity.x * deltaTime, m_velocity.y * deltaTime);
+
+    auto view = game.getRenderWindow().getView();
+    view.setCenter(m_sprite.getPosition());
+    game.getRenderWindow().setView(view);
+}
+
+void Player::setControlsEnabled(bool enabled) noexcept {
+    m_controlsEnabled = enabled;
 }
 
 void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const {

@@ -38,6 +38,7 @@ void CharacterSelectionScene::initialize(Game& game) {
 
             auto c = Character(
                 character.character_id(),
+                character.name(),
                 character.x(),
                 character.y(),
                 sf::Color(character.color()));

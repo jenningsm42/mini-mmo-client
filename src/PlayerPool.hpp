@@ -27,6 +27,8 @@ public:
 
     void removePlayer(uint32_t id) noexcept;
 
+    std::string getPlayerName(uint32_t id) noexcept;
+
 private:
     std::unordered_map<uint32_t, OtherPlayer> m_players;
 

@@ -14,6 +14,7 @@ set(SOURCE_FILES
         src/CharacterCreationScene.cpp
         src/CharacterPreview.cpp
         src/CharacterSelectionScene.cpp
+        src/Chatbox.cpp
         src/Game.cpp
         src/GameScene.cpp
         src/InputHandler.cpp
@@ -29,6 +30,7 @@ set(SOURCE_FILES
 
 set(PROTO_FILES
         proto/Characters.proto
+        proto/Chat.proto
         proto/Login.proto
         proto/PlayerJoin.proto
         proto/PlayerMove.proto

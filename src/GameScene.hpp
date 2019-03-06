@@ -1,6 +1,8 @@
 #ifndef GAMESCENE_HPP
 #define GAMESCENE_HPP
 
+#include <TGUI/TGUI.hpp>
+
 #include "Scene.hpp"
 #include "Character.hpp"
 

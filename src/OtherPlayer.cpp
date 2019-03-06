@@ -24,6 +24,10 @@ void OtherPlayer::setVelocity(float x, float y, float velocityX, float velocityY
     m_velocity = sf::Vector2f(velocityX, velocityY);
 }
 
+std::string OtherPlayer::getName() const noexcept {
+    return m_name;
+}
+
 void OtherPlayer::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     target.draw(m_sprite, states);
 }
