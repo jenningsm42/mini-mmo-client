@@ -19,6 +19,8 @@ public:
 
     void setVelocity(float x, float y, float velocityX, float velocityY) noexcept;
 
+    std::string getName() const noexcept;
+
     operator std::string() const noexcept;
 
 private:

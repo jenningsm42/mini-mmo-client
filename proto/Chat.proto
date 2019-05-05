@@ -1,0 +1,10 @@
+syntax = 'proto3';
+
+message SendChatMessage {
+    string msg = 1;
+}
+
+message ReceiveChatMessage {
+    uint32 player_id = 1;
+    string msg = 2;
+}

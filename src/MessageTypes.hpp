@@ -26,6 +26,9 @@ enum class MessageType : uint16_t {
     CharactersResponse = 17,
     CreateCharacterRequest = 18,
     CreateCharacterResponse = 19,
+
+    SendChatMessage = 20,
+    ReceiveChatMessage = 21
 };
 
 #endif // MESSAGETYPES_HPP

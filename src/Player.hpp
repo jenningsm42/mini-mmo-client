@@ -12,10 +12,13 @@ public:
 
     virtual void update(Game&, const GameObjectCollection&, float deltaTime) noexcept override;
 
+    void setControlsEnabled(bool enabled) noexcept;
+
 private:
     const float m_radius = 30.f;
     const float m_speed = 250.f;
     const float m_pi = 3.14159f;
+    bool m_controlsEnabled;
     sf::CircleShape m_sprite;
     sf::Vector2f m_velocity;
     sf::Vector2f m_previousVelocity;

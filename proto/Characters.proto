@@ -1,6 +1,5 @@
 syntax = 'proto3';
 
-
 message CharactersResponse {
     message Character {
         uint32 character_id = 1;

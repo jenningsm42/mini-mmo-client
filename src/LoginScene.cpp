@@ -12,6 +12,7 @@ void LoginScene::initialize(Game& game) {
     usernameEditBox->setSize({"30%", "5%"});
     usernameEditBox->setPosition({"&.width / 4 - width / 2", "&.height / 4 - height / 2"});
     usernameEditBox->setDefaultText("Username");
+    usernameEditBox->setFocused(true);
     gui.add(usernameEditBox, "usernameField");
 
     auto passwordEditBox = tgui::EditBox::create();

@@ -4,15 +4,17 @@
 
 class Character {
 public:
-    Character(uint32_t id, float x, float y, const sf::Color&);
+    Character(uint32_t id, const std::string& name, float x, float y, const sf::Color&);
     Character(const Character&);
 
     uint32_t getId() const noexcept;
+    std::string getName() const noexcept;
     sf::Vector2f getPosition() const noexcept;
     sf::Color getColor() const noexcept;
 
 private:
     uint32_t m_id;
+    std::string m_name;
     sf::Vector2f m_position;
     sf::Color m_color;
 };
