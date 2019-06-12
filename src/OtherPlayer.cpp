@@ -1,40 +1,50 @@
 #include "OtherPlayer.hpp"
 
-OtherPlayer::OtherPlayer(
-    float x,
-    float y,
-    float velocityX,
-    float velocityY,
-    const sf::Color& color,
-    const std::string& name
-) {
-    m_sprite.setRadius(30.f);
-    m_sprite.setFillColor(color);
-    m_sprite.setPosition(x, y);
-    m_velocity = sf::Vector2f(velocityX, velocityY);
-    m_name = name;
+OtherPlayer::OtherPlayer(Game& game, const Character& character) : Character(character) {
+    initializeSkeleton(&game);
 }
 
-void OtherPlayer::update(Game&, const GameObjectCollection&, float deltaTime) noexcept {
-    m_sprite.move(m_velocity.x * deltaTime, m_velocity.y * deltaTime);
+OtherPlayer::OtherPlayer(const OtherPlayer& other) : Character(other) {
+    m_velocity = other.m_velocity;
 }
 
-void OtherPlayer::setVelocity(float x, float y, float velocityX, float velocityY) noexcept {
-    m_sprite.setPosition(x, y);
-    m_velocity = sf::Vector2f(velocityX, velocityY);
+OtherPlayer::OtherPlayer(OtherPlayer&& other) : Character(std::move(other)) {
+    m_velocity = other.m_velocity;
 }
 
-std::string OtherPlayer::getName() const noexcept {
-    return m_name;
+void OtherPlayer::update(Game& game, const GameObjectCollection& gameObjectCollection, float deltaTime) noexcept {
+    Character::update(game, gameObjectCollection, deltaTime);
+
+    m_position.x += m_velocity.x * deltaTime;
+    m_position.y += m_velocity.y * deltaTime;
+
+    m_drawable->skeleton->setPosition(m_position.x, m_position.y);
+    m_drawable->skeleton->updateWorldTransform();
 }
 
-void OtherPlayer::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-    target.draw(m_sprite, states);
+void OtherPlayer::setVelocity(const sf::Vector2f& position, const sf::Vector2f& velocity) noexcept {
+    if (std::abs(velocity.x) > .01f || std::abs(velocity.y) > .01f) {
+        auto runAnimation = m_skeletonData->findAnimation("run");
+        if (getAnimationState()->getCurrent(0)->getAnimation() != runAnimation) {
+            getAnimationState()->setAnimation(0, runAnimation, true);
+        }
+
+        if (std::abs(velocity.x) > .01f) {
+            setOrientation(velocity.x > 0.f);
+        }
+    } else {
+        auto idleAnimation = m_skeletonData->findAnimation("idle");
+        if (getAnimationState()->getCurrent(0)->getAnimation() != idleAnimation) {
+            getAnimationState()->setAnimation(0, idleAnimation, true);
+        }
+    }
+
+    m_position = position;
+    m_velocity = velocity;
 }
 
 OtherPlayer::operator std::string() const noexcept {
-    auto position = m_sprite.getPosition();
     return "<\"" + m_name + "\" (" +
-        std::to_string(position.x) + ", " +
-        std::to_string(position.y) + ")>";
+        std::to_string(m_position.x) + ", " +
+        std::to_string(m_position.y) + ")>";
 }

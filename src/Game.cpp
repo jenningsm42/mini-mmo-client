@@ -8,6 +8,7 @@
 
 Game::Game() : m_assetCache("./data"), m_window(sf::VideoMode(800, 600), "Client") {
     m_gui.setTarget(m_window);
+    tgui::setGlobalTextSize(14);
 }
 
 Game::~Game() {
@@ -48,7 +49,7 @@ void Game::run() {
         update(elapsed.asSeconds());
 
         // Draw everything
-        m_window.clear();
+        m_window.clear(sf::Color(0xd4, 0xd3, 0xcb));
 
         // Everything in the scene
         m_sceneHandler.draw(m_window);

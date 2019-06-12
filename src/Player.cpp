@@ -6,14 +6,25 @@
 
 #include "PlayerMove.pb.h"
 
-Player::Player(const Character& character) : m_controlsEnabled(true) {
-    m_sprite.setRadius(m_radius);
-    m_sprite.setFillColor(character.getColor());
-    m_sprite.setPosition(character.getPosition());
-    m_sprite.setOrigin(m_radius, m_radius);
+Player::Player(Game& game, const Character& character) : Character(character), m_controlsEnabled(true) {
+    initializeSkeleton(&game);
 }
 
-void Player::update(Game& game, const GameObjectCollection&, float deltaTime) noexcept {
+Player::Player(const Player& other) : Character(other) {
+    m_controlsEnabled = other.m_controlsEnabled;
+    m_velocity = other.m_velocity;
+    m_previousVelocity = other.m_previousVelocity;
+}
+
+Player::Player(Player&& other) : Character(std::move(other)) {
+    m_controlsEnabled = other.m_controlsEnabled;
+    m_velocity = std::move(other.m_velocity);
+    m_previousVelocity = std::move(other.m_previousVelocity);
+}
+
+void Player::update(Game& game, const GameObjectCollection& gameObjectCollection, float deltaTime) noexcept {
+    Character::update(game, gameObjectCollection, deltaTime);
+
     if (!m_controlsEnabled) {
         return;
     }
@@ -57,33 +68,48 @@ void Player::update(Game& game, const GameObjectCollection&, float deltaTime) no
 
     if (m_velocity != m_previousVelocity) {
         if (m_velocity != sf::Vector2f()) {
+            // Moving
             PlayerMove playerMove;
-            playerMove.set_x(m_sprite.getPosition().x);
-            playerMove.set_y(m_sprite.getPosition().y);
+            playerMove.set_x(m_position.x);
+            playerMove.set_y(m_position.y);
             playerMove.set_velocity_x(m_velocity.x);
             playerMove.set_velocity_y(m_velocity.y);
 
             socket.sendMessage(Message(MessageType::PlayerMove, playerMove));
+
+            auto runAnimation = m_skeletonData->findAnimation("run");
+            if (getAnimationState()->getCurrent(0)->getAnimation() != runAnimation) {
+                getAnimationState()->setAnimation(0, runAnimation, true);
+            }
+
+            if (std::abs(m_velocity.x) > .01f) {
+                setOrientation(m_velocity.x > 0.f);
+            }
         } else {
+            // Not moving
             PlayerStop playerStop;
-            playerStop.set_x(m_sprite.getPosition().x);
-            playerStop.set_y(m_sprite.getPosition().y);
+            playerStop.set_x(m_position.x);
+            playerStop.set_y(m_position.y);
 
             socket.sendMessage(Message(MessageType::PlayerStop, playerStop));
+
+            auto idleAnimation = m_skeletonData->findAnimation("idle");
+            if (getAnimationState()->getCurrent(0)->getAnimation() != idleAnimation) {
+                getAnimationState()->setAnimation(0, idleAnimation, true);
+            }
         }
     }
 
-    m_sprite.move(m_velocity.x * deltaTime, m_velocity.y * deltaTime);
+    m_position.x += m_velocity.x * deltaTime;
+    m_position.y += m_velocity.y * deltaTime;
+
+    m_drawable->skeleton->setPosition(m_position.x, m_position.y);
 
     auto view = game.getRenderWindow().getView();
-    view.setCenter(m_sprite.getPosition());
+    view.setCenter(m_position);
     game.getRenderWindow().setView(view);
 }
 
 void Player::setControlsEnabled(bool enabled) noexcept {
     m_controlsEnabled = enabled;
-}
-
-void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-    target.draw(m_sprite, states);
 }

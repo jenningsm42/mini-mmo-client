@@ -1,46 +1,79 @@
 #include "CharacterCreationScene.hpp"
 #include "CharacterSelectionScene.hpp"
+#include "ColorPickerWidget.hpp"
 #include "Game.hpp"
 
 #include "Characters.pb.h"
 
 #include <iostream>
 
-CharacterCreationScene::CharacterCreationScene() : m_generator((std::random_device())()) {}
-
 void CharacterCreationScene::initialize(Game& game) {
+    // Character colors
+    const std::vector<sf::Color> bodyColors = {
+        sf::Color(0x226765ff),
+        sf::Color(0xaa6b39ff),
+        sf::Color(0x81a035ff),
+        sf::Color(0x832c65ff),
+    };
+
+    const std::vector<sf::Color> shirtColors = {
+        sf::Color(0xa7383dff),
+        sf::Color(0xaa8b39ff),
+        sf::Color(0x323875ff),
+        sf::Color(0x378b2eff),
+    };
+
+    const std::vector<sf::Color> legsColors = {
+        sf::Color(0x1a1d20ff),
+        sf::Color(0x716848ff),
+        sf::Color(0x603841ff),
+    };
+
+    // GUI elements
     auto& gui = game.getGui();
+
+    auto bodyColorPicker = ColorPickerWidget::create("Body Color", bodyColors);
+    bodyColorPicker->setPosition({"3 * &.width / 5", "30"});
+    gui.add(bodyColorPicker, "bodyColorPicker");
+
+    auto shirtColorPicker = ColorPickerWidget::create("Shirt Color", shirtColors);
+    shirtColorPicker->setPosition({"bodyColorPicker.left", "bodyColorPicker.bottom + 20"});
+    gui.add(shirtColorPicker, "shirtColorPicker");
+
+    auto legsColorPicker = ColorPickerWidget::create("Legs Color", legsColors);
+    legsColorPicker->setPosition({"bodyColorPicker.left", "shirtColorPicker.bottom + 20"});
+    gui.add(legsColorPicker, "legsColorPicker");
 
     auto nameEditBox = tgui::EditBox::create();
     nameEditBox->setSize({"30%", "5%"});
-    nameEditBox->setPosition({"&.width / 2 - width / 2", "&.height / 3"});
+    nameEditBox->setPosition({"bodyColorPicker.left", "legsColorPicker.bottom + 20"});
     nameEditBox->setDefaultText("Name");
     gui.add(nameEditBox, "nameEditBox");
 
-    auto createButton = tgui::Button::create("Create");
-    createButton->setSize({"nameEditBox.width / 2 - 5", "nameEditBox.height"});
-    createButton->setPosition({"nameEditBox.left", "nameEditBox.bottom + 10"});
+    auto createButton = tgui::Button::create("Create!");
+    createButton->setSize({"nameEditBox.width", "nameEditBox.height"});
+    createButton->setPosition({"bodyColorPicker.left", "nameEditBox.bottom + 10"});
     gui.add(createButton, "createButton");
 
-    auto randomizeColorButton = tgui::Button::create("Randomize!");
-    randomizeColorButton->setSize({"nameEditBox.width / 2 - 5", "nameEditBox.height"});
-    randomizeColorButton->setPosition({"createButton.right + 10", "createButton.top"});
-    gui.add(randomizeColorButton);
-
     // Game objects
-    m_characterPreview = std::make_shared<CharacterPreview>();
+    m_characterPreview = std::make_shared<Character>(
+        0, "", 200.f, 400.f, bodyColors[0], shirtColors[0], legsColors[0]);
+    m_characterPreview->initializeSkeleton(&game);
+    m_characterPreview->setScale(3.f);
+
     addObject("characterPreview", m_characterPreview);
 
-    // Button signals
+    // Signals
+    bodyColorPicker->connect("colorChanged", &CharacterCreationScene::setBodyColor, this);
+    shirtColorPicker->connect("colorChanged", &CharacterCreationScene::setShirtColor, this);
+    legsColorPicker->connect("colorChanged", &CharacterCreationScene::setLegsColor, this);
+
     createButton->connect(
         "pressed",
         &CharacterCreationScene::createCharacter,
         this,
         std::ref(game),
-        nameEditBox,
-        std::ref(m_characterPreview));
-
-    randomizeColorButton->connect("pressed", &CharacterCreationScene::randomizeColor, this);
+        nameEditBox);
 
     // Message handlers
     addMessageHandler(MessageType::CreateCharacterResponse, [&](Game& game, const Message& message) {
@@ -55,24 +88,28 @@ void CharacterCreationScene::initialize(Game& game) {
     });
 }
 
-void CharacterCreationScene::createCharacter(
-    Game& game,
-    tgui::EditBox::Ptr nameEditBox,
-    std::shared_ptr<CharacterPreview> preview
-) {
+void CharacterCreationScene::createCharacter(Game& game, tgui::EditBox::Ptr nameEditBox) {
     auto& socket = game.getSocket();
 
     CreateCharacterRequest createCharacterRequest;
     createCharacterRequest.set_name(nameEditBox->getText().toAnsiString());
-    createCharacterRequest.set_color(preview->getColor().toInteger());
+    createCharacterRequest.set_body_color(m_characterPreview->getBodyColor().toInteger());
+    createCharacterRequest.set_shirt_color(m_characterPreview->getShirtColor().toInteger());
+    createCharacterRequest.set_legs_color(m_characterPreview->getLegsColor().toInteger());
 
     socket.sendMessage(Message(
         MessageType::CreateCharacterRequest,
         createCharacterRequest));
 }
 
-void CharacterCreationScene::randomizeColor() noexcept {
-    auto color = sf::Color(m_generator());
-    color.a = 0xff;
-    m_characterPreview->setColor(color);
+void CharacterCreationScene::setBodyColor(sf::Uint32 colorInt) {
+    m_characterPreview->setBodyColor(sf::Color(colorInt));
+}
+
+void CharacterCreationScene::setShirtColor(sf::Uint32 colorInt) {
+    m_characterPreview->setShirtColor(sf::Color(colorInt));
+}
+
+void CharacterCreationScene::setLegsColor(sf::Uint32 colorInt) {
+    m_characterPreview->setLegsColor(sf::Color(colorInt));
 }

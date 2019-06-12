@@ -12,7 +12,6 @@ void LoginScene::initialize(Game& game) {
     usernameEditBox->setSize({"30%", "5%"});
     usernameEditBox->setPosition({"&.width / 4 - width / 2", "&.height / 4 - height / 2"});
     usernameEditBox->setDefaultText("Username");
-    usernameEditBox->setFocused(true);
     gui.add(usernameEditBox, "usernameField");
 
     auto passwordEditBox = tgui::EditBox::create();
@@ -31,6 +30,8 @@ void LoginScene::initialize(Game& game) {
     loginButton->setSize({"usernameField.width / 2 - 5", "usernameField.height"});
     loginButton->setPosition({"registerButton.right + 10", "registerButton.top"});
     gui.add(loginButton);
+
+    usernameEditBox->setFocused(true);
 
     auto& socket = game.getSocket();
 

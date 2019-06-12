@@ -41,7 +41,9 @@ void CharacterSelectionScene::initialize(Game& game) {
                 character.name(),
                 character.x(),
                 character.y(),
-                sf::Color(character.color()));
+                sf::Color(character.body_color()),
+                sf::Color(character.shirt_color()),
+                sf::Color(character.legs_color()));
 
             auto b = tgui::Button::create(character.name());
 

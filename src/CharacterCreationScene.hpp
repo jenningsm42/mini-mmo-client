@@ -5,24 +5,21 @@
 
 #include <TGUI/TGUI.hpp>
 
-#include "CharacterPreview.hpp"
+#include "Character.hpp"
 #include "Scene.hpp"
 
 class CharacterCreationScene : public Scene {
 public:
-    CharacterCreationScene();
-
     virtual void initialize(Game&) override;
 
 private:
-    std::mt19937 m_generator;
-    std::shared_ptr<CharacterPreview> m_characterPreview;
+    std::shared_ptr<Character> m_characterPreview;
 
-    void createCharacter(
-        Game&,
-        tgui::EditBox::Ptr nameEditBox,
-        std::shared_ptr<CharacterPreview>);
-    void randomizeColor() noexcept;
+    void createCharacter(Game&, tgui::EditBox::Ptr nameEditBox);
+
+    void setBodyColor(sf::Uint32);
+    void setShirtColor(sf::Uint32);
+    void setLegsColor(sf::Uint32);
 };
 
 #endif // CHARACTERCREATIONSCENE_HPP

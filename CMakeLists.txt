@@ -5,14 +5,13 @@ project(MiniMMOClient
         DESCRIPTION "Mini-'MMO' Client"
         LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 set(SOURCE_FILES
         src/AnimatedSprite.cpp
         src/AssetCache.cpp
         src/Character.cpp
         src/CharacterCreationScene.cpp
-        src/CharacterPreview.cpp
         src/CharacterSelectionScene.cpp
         src/Chatbox.cpp
         src/Game.cpp
@@ -26,7 +25,8 @@ set(SOURCE_FILES
         src/PlayerPool.cpp
         src/Scene.cpp
         src/SceneHandler.cpp
-        src/Socket.cpp)
+        src/Socket.cpp
+        src/ColorPickerWidget.cpp)
 
 set(PROTO_FILES
         proto/Characters.proto
@@ -37,6 +37,9 @@ set(PROTO_FILES
         proto/Register.proto
         proto/Version.proto)
 
+set(SPINE_DIR spine)
+file(GLOB SPINE_SOURCE_FILES "${SPINE_DIR}/spine/*.cpp")
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "bin")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -46,7 +49,9 @@ find_package(Protobuf REQUIRED)
 
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
 
-add_executable(client ${SOURCE_FILES} ${PROTO_SRCS})
+include_directories(${SPINE_DIR})
+
+add_executable(client ${SOURCE_FILES} ${PROTO_SRCS} ${SPINE_SOURCE_FILES})
 
 if (MSVC)
     target_compile_options(client PRIVATE /W4 /WX)
