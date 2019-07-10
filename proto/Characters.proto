@@ -1,19 +1,24 @@
 syntax = 'proto3';
 
+message CharacterData {
+    uint32 character_id = 1;
+    string name = 2;
+    uint32 body_color = 3;
+    uint32 shirt_color = 4;
+    uint32 legs_color = 5;
+    float x = 6;
+    float y = 7;
+}
+
 message CharactersResponse {
-    message Character {
-        uint32 character_id = 1;
-        string name = 2;
-        uint32 color = 3;
-        float x = 4;
-        float y = 5;
-    }
-    repeated Character characters = 1;
+    repeated CharacterData characters = 1;
 }
 
 message CreateCharacterRequest {
     string name = 1;
-    uint32 color = 2;
+    uint32 body_color = 2;
+    uint32 shirt_color = 3;
+    uint32 legs_color = 4;
 }
 
 message CreateCharacterResponse {

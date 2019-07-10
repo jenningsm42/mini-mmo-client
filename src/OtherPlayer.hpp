@@ -3,32 +3,22 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "GameObject.hpp"
+#include "Character.hpp"
 
-class OtherPlayer : public GameObject {
+class OtherPlayer : public Character {
 public:
-    OtherPlayer(
-        float x,
-        float y,
-        float velocityX,
-        float velocityY,
-        const sf::Color&,
-        const std::string& name);
+    OtherPlayer(Game&, const Character&);
+    OtherPlayer(const OtherPlayer&);
+    OtherPlayer(OtherPlayer&&);
 
     virtual void update(Game&, const GameObjectCollection&, float deltaTime) noexcept override;
 
-    void setVelocity(float x, float y, float velocityX, float velocityY) noexcept;
-
-    std::string getName() const noexcept;
+    void setVelocity(const sf::Vector2f& position, const sf::Vector2f& velocity) noexcept;
 
     operator std::string() const noexcept;
 
 private:
-    sf::CircleShape m_sprite;
     sf::Vector2f m_velocity;
-    std::string m_name;
-
-    virtual void draw(sf::RenderTarget&, sf::RenderStates) const override;
 };
 
 #endif // OTHERPLAYER_HPP

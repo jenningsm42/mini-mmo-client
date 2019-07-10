@@ -3,18 +3,18 @@
 
 #include <iostream>
 
-void PlayerPool::handleMessage(Game&, const Message& message) noexcept {
+void PlayerPool::handleMessage(Game& game, const Message& message) noexcept {
     switch (message.getType()) {
         case MessageType::PlayersResponse: {
             PlayersResponse playersResponse;
             message.getMessage(playersResponse);
-            handlePlayersResponse(playersResponse);
+            handlePlayersResponse(game, playersResponse);
             break;
         }
         case MessageType::PlayerJoin: {
             PlayerJoin playerJoin;
             message.getMessage(playerJoin);
-            handlePlayerJoin(playerJoin);
+            handlePlayerJoin(game, playerJoin);
             break;
         }
         case MessageType::PlayerLeave: {
@@ -45,7 +45,7 @@ void PlayerPool::update(
     float deltaTime
 ) noexcept {
     for (auto& player : m_players) {
-        player.second.update(game, gameObjects, deltaTime);
+        m_players.at(player.first).update(game, gameObjects, deltaTime);
     }
 }
 
@@ -64,43 +64,57 @@ void PlayerPool::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 }
 
 void PlayerPool::addPlayer(
+    Game& game,
     uint32_t id,
     float x,
     float y,
     float velocityX,
     float velocityY,
-    const sf::Color& color,
+    const sf::Color& bodyColor,
+    const sf::Color& shirtColor,
+    const sf::Color& legsColor,
     const std::string& name
 ) noexcept {
-    m_players.emplace(id, OtherPlayer(x, y, velocityX, velocityY, color, name));
+    auto character = Character(id, name, x, y, bodyColor, shirtColor, legsColor);
+    m_players.emplace(id, OtherPlayer(game, character));
+    m_players.at(id).initializeSkeleton(&game);
+    m_players.at(id).setVelocity(sf::Vector2f(x, y), sf::Vector2f(velocityX, velocityY));
 }
 
 void PlayerPool::removePlayer(uint32_t id) noexcept {
     m_players.erase(id);
 }
 
-void PlayerPool::handlePlayersResponse(const PlayersResponse& playersResponse) {
+void PlayerPool::handlePlayersResponse(Game& game, const PlayersResponse& playersResponse) {
     for (auto& player : playersResponse.players()) {
+        auto character = player.character();
         addPlayer(
+            game,
             player.player_id(),
-            player.x(),
-            player.y(),
+            character.x(),
+            character.y(),
             player.velocity_x(),
             player.velocity_y(),
-            sf::Color(player.color()),
-            player.name());
+            sf::Color(character.body_color()),
+            sf::Color(character.shirt_color()),
+            sf::Color(character.legs_color()),
+            character.name());
     }
 }
 
-void PlayerPool::handlePlayerJoin(const PlayerJoin& playerJoin) {
+void PlayerPool::handlePlayerJoin(Game& game, const PlayerJoin& playerJoin) {
+    auto character = playerJoin.character();
     addPlayer(
+        game,
         playerJoin.player_id(),
-        playerJoin.x(),
-        playerJoin.y(),
+        character.x(),
+        character.y(),
         0.f,
         0.f,
-        sf::Color(playerJoin.color()),
-        playerJoin.name());
+        sf::Color(character.body_color()),
+        sf::Color(character.shirt_color()),
+        sf::Color(character.legs_color()),
+        character.name());
 }
 
 void PlayerPool::handlePlayerLeave(const PlayerLeave& playerLeave) {
@@ -110,10 +124,8 @@ void PlayerPool::handlePlayerLeave(const PlayerLeave& playerLeave) {
 void PlayerPool::handleOtherPlayerMove(const OtherPlayerMove& otherPlayerMove) {
     try {
         m_players.at(otherPlayerMove.player_id()).setVelocity(
-            otherPlayerMove.x(),
-            otherPlayerMove.y(),
-            otherPlayerMove.velocity_x(),
-            otherPlayerMove.velocity_y());
+            sf::Vector2f(otherPlayerMove.x(), otherPlayerMove.y()),
+            sf::Vector2f(otherPlayerMove.velocity_x(), otherPlayerMove.velocity_y()));
     }
     catch (std::out_of_range exception) {
         // Player doesn't exist - ignore message
@@ -125,10 +137,8 @@ void PlayerPool::handleOtherPlayerMove(const OtherPlayerMove& otherPlayerMove) {
 void PlayerPool::handleOtherPlayerStop(const OtherPlayerStop& otherPlayerStop) {
     try {
         m_players.at(otherPlayerStop.player_id()).setVelocity(
-            otherPlayerStop.x(),
-            otherPlayerStop.y(),
-            0.f,
-            0.f);
+            sf::Vector2f(otherPlayerStop.x(), otherPlayerStop.y()),
+            sf::Vector2f(0.f, 0.f));
     }
     catch (std::out_of_range exception) {
         // Player doesn't exist - ignore message

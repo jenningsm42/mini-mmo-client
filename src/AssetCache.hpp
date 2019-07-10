@@ -4,6 +4,7 @@
 #include <memory>
 #include <unordered_map>
 #include <SFML/Graphics.hpp>
+#include <spine/spine-sfml.h>
 
 class AssetMissingException : public std::exception {
 public:
@@ -37,10 +38,18 @@ public:
 
     std::shared_ptr<sf::Font> getFont(const std::string&);
 
+    std::shared_ptr<spine::Atlas> getAtlas(const std::string&);
+
+    std::shared_ptr<spine::SkeletonData> getSkeleton(const std::string& skeletonPath, const std::string& atlasPath);
+
 private:
     std::string m_workingDirectory;
+    spine::SFMLTextureLoader m_spineTextureLoader;
+
     std::unordered_map<std::string, std::shared_ptr<sf::Texture>> m_textures;
     std::unordered_map<std::string, std::shared_ptr<sf::Font>> m_fonts;
+    std::unordered_map<std::string, std::shared_ptr<spine::Atlas>> m_atlases;
+    std::unordered_map<std::string, std::shared_ptr<spine::SkeletonData>> m_skeletons;
 };
 
 #endif // ASSETCACHE_HPP

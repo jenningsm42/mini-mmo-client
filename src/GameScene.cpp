@@ -19,7 +19,7 @@ void GameScene::initialize(Game& game) {
 
     socket.sendMessage(Message(MessageType::JoinRequest, joinRequest));
 
-    auto player = std::make_shared<Player>(m_character);
+    auto player = std::make_shared<Player>(game, m_character);
     auto playerPool = std::make_shared<PlayerPool>();
     auto chatbox = std::make_shared<Chatbox>();
 

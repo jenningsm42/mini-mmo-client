@@ -11,3 +11,4 @@ cmake-build-debug/
 .ycm_extra_conf.py
 mini-mmo-client.vcxproj.user
 protoc.exe
+crash_report.txt

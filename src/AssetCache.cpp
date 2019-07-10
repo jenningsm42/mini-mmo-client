@@ -48,3 +48,45 @@ std::shared_ptr<sf::Font> AssetCache::getFont(const std::string& path) {
 
     return m_fonts[path];
 }
+
+std::shared_ptr<spine::Atlas> AssetCache::getAtlas(const std::string& path){
+    // Return asset if already loaded
+    auto itAtlas = m_atlases.find(path);
+    if (itAtlas != m_atlases.end()) {
+        return itAtlas->second;
+    }
+
+    // Construct full path with working directory
+    auto assetPath = m_workingDirectory + path;
+    m_atlases[path] = std::make_shared<spine::Atlas>(assetPath.c_str(), &m_spineTextureLoader);
+
+    // AssetMissingException is also thrown when the atlas exists but is empty
+    if (m_atlases[path]->getPages().size() == 0) {
+        m_atlases.erase(path);
+        throw AssetMissingException(assetPath);
+    }
+
+    return m_atlases[path];
+}
+
+std::shared_ptr<spine::SkeletonData> AssetCache::getSkeleton(const std::string& skeletonPath, const std::string& atlasPath) {
+    // Return asset if already loaded
+    auto itSkeleton = m_skeletons.find(skeletonPath + atlasPath);
+    if (itSkeleton != m_skeletons.end()) {
+        return itSkeleton->second;
+    }
+
+    auto atlas = getAtlas(atlasPath);
+
+    // Construct full path with working directory
+    auto skeletonAssetPath = m_workingDirectory + skeletonPath;
+    spine::SkeletonBinary binary(atlas.get());
+
+    auto skeletonData = binary.readSkeletonDataFile(skeletonAssetPath.c_str());
+    if (!skeletonData) {
+        throw AssetMissingException(skeletonAssetPath);
+    }
+
+    m_skeletons[skeletonPath] = std::shared_ptr<spine::SkeletonData>(skeletonData);
+    return m_skeletons[skeletonPath];
+}

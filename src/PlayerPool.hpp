@@ -17,12 +17,15 @@ public:
     virtual void update(Game&, const GameObjectCollection&, float deltaTime) noexcept override;
 
     void addPlayer(
+        Game& game,
         uint32_t id,
         float x,
         float y,
         float velocityX,
         float velocityY,
-        const sf::Color&,
+        const sf::Color& bodyColor,
+        const sf::Color& shirtColor,
+        const sf::Color& legsColor,
         const std::string& name) noexcept;
 
     void removePlayer(uint32_t id) noexcept;
@@ -34,9 +37,9 @@ private:
 
     virtual void draw(sf::RenderTarget&, sf::RenderStates) const override;
 
-    void handlePlayersResponse(const PlayersResponse&);
+    void handlePlayersResponse(Game&, const PlayersResponse&);
 
-    void handlePlayerJoin(const PlayerJoin&);
+    void handlePlayerJoin(Game&, const PlayerJoin&);
     void handlePlayerLeave(const PlayerLeave&);
 
     void handleOtherPlayerMove(const OtherPlayerMove&);

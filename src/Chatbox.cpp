@@ -40,7 +40,7 @@ void Chatbox::handleChatMessage(Game&, const GameObjectCollection& objects, cons
         name = playerPool->getPlayerName(receiveChatMessage.player_id());
     }
 
-    m_chatbox->addLine("[" + name + "]: " + receiveChatMessage.msg());
+    m_chatbox->addLine("[" + name + "] " + receiveChatMessage.msg());
 }
 
 void Chatbox::update(Game& game, const GameObjectCollection& objects, float) noexcept {

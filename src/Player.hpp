@@ -3,12 +3,13 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "GameObject.hpp"
 #include "Character.hpp"
 
-class Player : public GameObject {
+class Player : public Character {
 public:
-    Player(const Character&);
+    Player(Game&, const Character&);
+    Player(const Player&);
+    Player(Player&&);
 
     virtual void update(Game&, const GameObjectCollection&, float deltaTime) noexcept override;
 
@@ -19,11 +20,8 @@ private:
     const float m_speed = 250.f;
     const float m_pi = 3.14159f;
     bool m_controlsEnabled;
-    sf::CircleShape m_sprite;
     sf::Vector2f m_velocity;
     sf::Vector2f m_previousVelocity;
-
-    virtual void draw(sf::RenderTarget&, sf::RenderStates) const override;
 };
 
 #endif // PLAYER_HPP
