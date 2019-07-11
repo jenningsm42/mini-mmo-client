@@ -11,7 +11,7 @@ public:
     OtherPlayer(const OtherPlayer&);
     OtherPlayer(OtherPlayer&&);
 
-    virtual void update(Game&, const GameObjectCollection&, float deltaTime) noexcept override;
+    virtual void update(Game&, GameObjectCollection&, float deltaTime) noexcept override;
 
     void setVelocity(const sf::Vector2f& position, const sf::Vector2f& velocity) noexcept;
 

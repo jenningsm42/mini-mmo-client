@@ -7,14 +7,19 @@
 #include <SFML/Graphics/Drawable.hpp>
 
 class Game;
+class GameObjectCollection;
 
 class GameObject;
 
-using GameObjectCollection = std::unordered_map<std::string, std::shared_ptr<GameObject>>;
-
 class GameObject : public sf::Drawable {
 public:
-    virtual void update(Game&, const GameObjectCollection&, float deltaTime) noexcept = 0;
+    virtual void update(Game&, GameObjectCollection&, float deltaTime) noexcept = 0;
+
+    // Override getZIndex to add draw order sorting
+    virtual float getZIndex() const noexcept {
+        constexpr auto minimum = std::numeric_limits<float>::min();
+        return minimum;
+    };
 
 private:
     virtual void draw(sf::RenderTarget&, sf::RenderStates) const = 0;

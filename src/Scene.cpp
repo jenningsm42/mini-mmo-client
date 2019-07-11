@@ -13,29 +13,24 @@ bool Scene::handleMessage(Game& game, const Message& message) {
 
 void Scene::update(Game& game, float deltaTime) noexcept {
     for (auto& object : m_objects) {
-        object.second->update(game, m_objects, deltaTime);
+        object->update(game, m_objects, deltaTime);
     }
 }
 
 void Scene::draw(sf::RenderWindow& window) noexcept {
-    for (auto& objects : m_objectsDrawOrder) {
-        for (auto& object : objects.second) {
-            window.draw(*object);
-        }
+    m_objects.sort();
+
+    for (auto& object : m_objects) {
+        window.draw(*object);
     }
 }
 
-std::weak_ptr<GameObject> Scene::getObject(const std::string& name) noexcept {
-    if (m_objects.find(name) != m_objects.end()) {
-        return m_objects[name];
-    }
-
-    return std::weak_ptr<GameObject>();
+void Scene::addObject(const std::string& name, std::shared_ptr<GameObject> object) {
+    m_objects.add(name, object);
 }
 
-void Scene::addObject(const std::string& name, std::shared_ptr<GameObject> object, int zIndex) {
-    m_objects.emplace(name, object);
-    m_objectsDrawOrder[zIndex].push_back(object);
+void Scene::removeObject(const std::string &name) {
+    m_objects.remove(name);
 }
 
 void Scene::addMessageHandler(MessageType type, MessageHandler handler) {

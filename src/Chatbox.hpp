@@ -10,9 +10,9 @@ class Chatbox : public GameObject {
 public:
     void load(Game&, uint32_t playerId, const std::string& name);
 
-    void handleChatMessage(Game&, const GameObjectCollection&, const Message&) noexcept;
+    void handleChatMessage(Game&, GameObjectCollection&, const Message&) noexcept;
 
-    virtual void update(Game&, const GameObjectCollection&, float deltaTime) noexcept override;
+    virtual void update(Game&, GameObjectCollection&, float deltaTime) noexcept override;
 
 private:
     uint32_t m_playerId;

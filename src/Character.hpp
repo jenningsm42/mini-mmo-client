@@ -44,7 +44,9 @@ public:
     sf::Color getShirtColor() const noexcept;
     sf::Color getLegsColor() const noexcept;
 
-    virtual void update(Game&, const GameObjectCollection&, float deltaTime) noexcept override;
+    virtual void update(Game&, GameObjectCollection&, float deltaTime) noexcept override;
+
+    virtual float getZIndex() const noexcept override;
 
 protected:
     uint32_t m_id;

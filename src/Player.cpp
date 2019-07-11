@@ -22,7 +22,7 @@ Player::Player(Player&& other) : Character(std::move(other)) {
     m_previousVelocity = std::move(other.m_previousVelocity);
 }
 
-void Player::update(Game& game, const GameObjectCollection& gameObjectCollection, float deltaTime) noexcept {
+void Player::update(Game& game, GameObjectCollection& gameObjectCollection, float deltaTime) noexcept {
     Character::update(game, gameObjectCollection, deltaTime);
 
     if (!m_controlsEnabled) {

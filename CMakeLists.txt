@@ -14,11 +14,12 @@ set(SOURCE_FILES
         src/CharacterCreationScene.cpp
         src/CharacterSelectionScene.cpp
         src/Chatbox.cpp
+        src/ColorPickerWidget.cpp
         src/Game.cpp
+        src/GameObjectCollection.cpp
         src/GameScene.cpp
         src/InputHandler.cpp
         src/LoginScene.cpp
-        src/main.cpp
         src/Message.cpp
         src/OtherPlayer.cpp
         src/Player.cpp
@@ -26,7 +27,7 @@ set(SOURCE_FILES
         src/Scene.cpp
         src/SceneHandler.cpp
         src/Socket.cpp
-        src/ColorPickerWidget.cpp)
+        src/main.cpp)
 
 set(PROTO_FILES
         proto/Characters.proto
