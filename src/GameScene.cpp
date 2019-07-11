@@ -44,6 +44,7 @@ void GameScene::initialize(Game& game) {
             &PlayerPool::handleMessage,
             playerPool,
             std::placeholders::_1,
+            std::ref(m_objects),
             std::placeholders::_2));
     }
 
@@ -51,6 +52,6 @@ void GameScene::initialize(Game& game) {
         &Chatbox::handleChatMessage,
         chatbox,
         std::placeholders::_1,
-        m_objects,
+        std::ref(m_objects),
         std::placeholders::_2));
 }

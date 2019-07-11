@@ -11,7 +11,7 @@ public:
     Player(const Player&);
     Player(Player&&);
 
-    virtual void update(Game&, const GameObjectCollection&, float deltaTime) noexcept override;
+    virtual void update(Game&, GameObjectCollection&, float deltaTime) noexcept override;
 
     void setControlsEnabled(bool enabled) noexcept;
 

@@ -181,10 +181,14 @@ sf::Color Character::getLegsColor() const noexcept {
     return m_legsColor;
 }
 
-void Character::update(Game&, const GameObjectCollection&, float deltaTime) noexcept {
+void Character::update(Game&, GameObjectCollection&, float deltaTime) noexcept {
     if (m_drawable != nullptr) {
         m_drawable->update(deltaTime);
     }
+}
+
+float Character::getZIndex() const noexcept {
+    return m_position.y;
 }
 
 void Character::draw(sf::RenderTarget& target, sf::RenderStates states) const {

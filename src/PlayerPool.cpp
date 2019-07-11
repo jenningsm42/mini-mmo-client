@@ -1,26 +1,31 @@
 #include "PlayerPool.hpp"
 #include "OtherPlayer.hpp"
+#include "Game.hpp"
 
 #include <iostream>
 
-void PlayerPool::handleMessage(Game& game, const Message& message) noexcept {
+void PlayerPool::handleMessage(
+    Game& game,
+    GameObjectCollection& gameObjects,
+    const Message& message
+) noexcept {
     switch (message.getType()) {
         case MessageType::PlayersResponse: {
             PlayersResponse playersResponse;
             message.getMessage(playersResponse);
-            handlePlayersResponse(game, playersResponse);
+            handlePlayersResponse(game, gameObjects, playersResponse);
             break;
         }
         case MessageType::PlayerJoin: {
             PlayerJoin playerJoin;
             message.getMessage(playerJoin);
-            handlePlayerJoin(game, playerJoin);
+            handlePlayerJoin(game, gameObjects, playerJoin);
             break;
         }
         case MessageType::PlayerLeave: {
             PlayerLeave playerLeave;
             message.getMessage(playerLeave);
-            handlePlayerLeave(playerLeave);
+            handlePlayerLeave(gameObjects, playerLeave);
             break;
         }
         case MessageType::OtherPlayerMove: {
@@ -39,14 +44,7 @@ void PlayerPool::handleMessage(Game& game, const Message& message) noexcept {
     }
 }
 
-void PlayerPool::update(
-    Game& game,
-    const GameObjectCollection& gameObjects,
-    float deltaTime
-) noexcept {
-    for (auto& player : m_players) {
-        m_players.at(player.first).update(game, gameObjects, deltaTime);
-    }
+void PlayerPool::update(Game&, GameObjectCollection&, float) noexcept {
 }
 
 std::string PlayerPool::getPlayerName(uint32_t id) noexcept {
@@ -54,17 +52,15 @@ std::string PlayerPool::getPlayerName(uint32_t id) noexcept {
         return "";
     }
 
-    return m_players.at(id).getName();
+    return m_players.at(id)->getName();
 }
 
-void PlayerPool::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-    for (auto& player : m_players) {
-        target.draw(player.second, states);
-    }
+void PlayerPool::draw(sf::RenderTarget&, sf::RenderStates) const {
 }
 
 void PlayerPool::addPlayer(
     Game& game,
+    GameObjectCollection& gameObjects,
     uint32_t id,
     float x,
     float y,
@@ -76,20 +72,29 @@ void PlayerPool::addPlayer(
     const std::string& name
 ) noexcept {
     auto character = Character(id, name, x, y, bodyColor, shirtColor, legsColor);
-    m_players.emplace(id, OtherPlayer(game, character));
-    m_players.at(id).initializeSkeleton(&game);
-    m_players.at(id).setVelocity(sf::Vector2f(x, y), sf::Vector2f(velocityX, velocityY));
+    m_players.emplace(id, std::make_shared<OtherPlayer>(game, character));
+    m_players.at(id)->initializeSkeleton(&game);
+    m_players.at(id)->setVelocity(sf::Vector2f(x, y), sf::Vector2f(velocityX, velocityY));
+
+    gameObjects.add("otherPlayer-" + std::to_string(id), m_players.at(id));
 }
 
-void PlayerPool::removePlayer(uint32_t id) noexcept {
+void PlayerPool::removePlayer(GameObjectCollection& gameObjects, uint32_t id) noexcept {
     m_players.erase(id);
+
+    gameObjects.remove("otherPlayer-" + std::to_string(id));
 }
 
-void PlayerPool::handlePlayersResponse(Game& game, const PlayersResponse& playersResponse) {
+void PlayerPool::handlePlayersResponse(
+    Game& game,
+    GameObjectCollection& gameObjects,
+    const PlayersResponse& playersResponse
+) {
     for (auto& player : playersResponse.players()) {
         auto character = player.character();
         addPlayer(
             game,
+            gameObjects,
             player.player_id(),
             character.x(),
             character.y(),
@@ -102,10 +107,15 @@ void PlayerPool::handlePlayersResponse(Game& game, const PlayersResponse& player
     }
 }
 
-void PlayerPool::handlePlayerJoin(Game& game, const PlayerJoin& playerJoin) {
+void PlayerPool::handlePlayerJoin(
+    Game& game,
+    GameObjectCollection& gameObjects,
+    const PlayerJoin& playerJoin
+) {
     auto character = playerJoin.character();
     addPlayer(
         game,
+        gameObjects,
         playerJoin.player_id(),
         character.x(),
         character.y(),
@@ -117,13 +127,13 @@ void PlayerPool::handlePlayerJoin(Game& game, const PlayerJoin& playerJoin) {
         character.name());
 }
 
-void PlayerPool::handlePlayerLeave(const PlayerLeave& playerLeave) {
-    removePlayer(playerLeave.player_id());
+void PlayerPool::handlePlayerLeave(GameObjectCollection& gameObjects, const PlayerLeave& playerLeave) {
+    removePlayer(gameObjects, playerLeave.player_id());
 }
 
 void PlayerPool::handleOtherPlayerMove(const OtherPlayerMove& otherPlayerMove) {
     try {
-        m_players.at(otherPlayerMove.player_id()).setVelocity(
+        m_players.at(otherPlayerMove.player_id())->setVelocity(
             sf::Vector2f(otherPlayerMove.x(), otherPlayerMove.y()),
             sf::Vector2f(otherPlayerMove.velocity_x(), otherPlayerMove.velocity_y()));
     }
@@ -136,7 +146,7 @@ void PlayerPool::handleOtherPlayerMove(const OtherPlayerMove& otherPlayerMove) {
 
 void PlayerPool::handleOtherPlayerStop(const OtherPlayerStop& otherPlayerStop) {
     try {
-        m_players.at(otherPlayerStop.player_id()).setVelocity(
+        m_players.at(otherPlayerStop.player_id())->setVelocity(
             sf::Vector2f(otherPlayerStop.x(), otherPlayerStop.y()),
             sf::Vector2f(0.f, 0.f));
     }

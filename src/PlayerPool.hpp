@@ -12,12 +12,13 @@
 
 class PlayerPool : public GameObject {
 public:
-    void handleMessage(Game&, const Message&) noexcept;
+    void handleMessage(Game&, GameObjectCollection&, const Message&) noexcept;
 
-    virtual void update(Game&, const GameObjectCollection&, float deltaTime) noexcept override;
+    virtual void update(Game&, GameObjectCollection&, float deltaTime) noexcept override;
 
     void addPlayer(
         Game& game,
+        GameObjectCollection&,
         uint32_t id,
         float x,
         float y,
@@ -28,19 +29,19 @@ public:
         const sf::Color& legsColor,
         const std::string& name) noexcept;
 
-    void removePlayer(uint32_t id) noexcept;
+    void removePlayer(GameObjectCollection&, uint32_t id) noexcept;
 
     std::string getPlayerName(uint32_t id) noexcept;
 
 private:
-    std::unordered_map<uint32_t, OtherPlayer> m_players;
+    std::unordered_map<uint32_t, std::shared_ptr<OtherPlayer>> m_players;
 
     virtual void draw(sf::RenderTarget&, sf::RenderStates) const override;
 
-    void handlePlayersResponse(Game&, const PlayersResponse&);
+    void handlePlayersResponse(Game&, GameObjectCollection&, const PlayersResponse&);
 
-    void handlePlayerJoin(Game&, const PlayerJoin&);
-    void handlePlayerLeave(const PlayerLeave&);
+    void handlePlayerJoin(Game&, GameObjectCollection&, const PlayerJoin&);
+    void handlePlayerLeave(GameObjectCollection&, const PlayerLeave&);
 
     void handleOtherPlayerMove(const OtherPlayerMove&);
     void handleOtherPlayerStop(const OtherPlayerStop&);

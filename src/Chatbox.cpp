@@ -22,7 +22,7 @@ void Chatbox::load(Game& game, uint32_t playerId, const std::string& name) {
     gui.add(m_chatbox);
 }
 
-void Chatbox::handleChatMessage(Game&, const GameObjectCollection& objects, const Message& message) noexcept {
+void Chatbox::handleChatMessage(Game&, GameObjectCollection& objects, const Message& message) noexcept {
     if (message.getType() != MessageType::ReceiveChatMessage) {
         std::cout << "Chatbox received wrong message type: " << static_cast<uint16_t>(message.getType()) << std::endl;
         return;
@@ -36,18 +36,18 @@ void Chatbox::handleChatMessage(Game&, const GameObjectCollection& objects, cons
         name = m_name;
     }
     else {
-        auto playerPool = std::dynamic_pointer_cast<PlayerPool>(objects.at("playerPool"));
+        auto playerPool = std::dynamic_pointer_cast<PlayerPool>(objects.get("playerPool"));
         name = playerPool->getPlayerName(receiveChatMessage.player_id());
     }
 
     m_chatbox->addLine("[" + name + "] " + receiveChatMessage.msg());
 }
 
-void Chatbox::update(Game& game, const GameObjectCollection& objects, float) noexcept {
+void Chatbox::update(Game& game, GameObjectCollection& objects, float) noexcept {
     auto& input = game.getInputHandler();
     auto& socket = game.getSocket();
 
-    auto player = std::dynamic_pointer_cast<Player>(objects.at("player"));
+    auto player = std::dynamic_pointer_cast<Player>(objects.get("player"));
 
     if (input.getKeyTapped(sf::Keyboard::Enter)) {
         if (m_input->isFocused()) {

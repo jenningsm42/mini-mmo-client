@@ -12,7 +12,7 @@ OtherPlayer::OtherPlayer(OtherPlayer&& other) : Character(std::move(other)) {
     m_velocity = other.m_velocity;
 }
 
-void OtherPlayer::update(Game& game, const GameObjectCollection& gameObjectCollection, float deltaTime) noexcept {
+void OtherPlayer::update(Game& game, GameObjectCollection& gameObjectCollection, float deltaTime) noexcept {
     Character::update(game, gameObjectCollection, deltaTime);
 
     m_position.x += m_velocity.x * deltaTime;
