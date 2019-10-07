@@ -5,6 +5,9 @@
 #include "Player.hpp"
 
 #include "PlayerMove.pb.h"
+#include "Map.hpp"
+
+constexpr float Pi = 3.14159f;
 
 Player::Player(Game& game, const Character& character) : Character(character), m_controlsEnabled(true) {
     initializeSkeleton(&game);
@@ -18,12 +21,12 @@ Player::Player(const Player& other) : Character(other) {
 
 Player::Player(Player&& other) : Character(std::move(other)) {
     m_controlsEnabled = other.m_controlsEnabled;
-    m_velocity = std::move(other.m_velocity);
-    m_previousVelocity = std::move(other.m_previousVelocity);
+    m_velocity = other.m_velocity;
+    m_previousVelocity = other.m_previousVelocity;
 }
 
-void Player::update(Game& game, GameObjectCollection& gameObjectCollection, float deltaTime) noexcept {
-    Character::update(game, gameObjectCollection, deltaTime);
+void Player::update(Game& game, GameObjectCollection& gameObjects, float deltaTime) noexcept {
+    Character::update(game, gameObjects, deltaTime);
 
     if (!m_controlsEnabled) {
         return;
@@ -41,31 +44,32 @@ void Player::update(Game& game, GameObjectCollection& gameObjectCollection, floa
     m_velocity = sf::Vector2f();
 
     if ((up || down || left || right) && (up != down || left != right)) {
-        float angle = 0.f;
+        float angle;
 
         if (up == down) {
-            angle = left? m_pi : 0.f;
+            angle = left? Pi : 0.f;
         }
         else if (left == right) {
-            angle = up? 3.f * m_pi / 2.f : m_pi / 2.f;
+            angle = up? 3.f * Pi / 2.f : Pi / 2.f;
         }
         else if (up && left) {
-            angle = 5.f * m_pi / 4.f;
+            angle = 5.f * Pi / 4.f;
         }
         else if (up && right) {
-            angle = 7.f * m_pi / 4.f;
+            angle = 7.f * Pi / 4.f;
         }
         else if (down && left) {
-            angle = 3.f * m_pi / 4.f;
+            angle = 3.f * Pi / 4.f;
         }
         else { // down and right
-            angle = m_pi / 4.f;
+            angle = Pi / 4.f;
         }
 
-        m_velocity.x = m_speed * std::cos(angle);
-        m_velocity.y = m_speed * std::sin(angle);
+        m_velocity.x = Player::Speed * std::cos(angle);
+        m_velocity.y = Player::Speed * std::sin(angle);
     }
 
+    // Send player movement state to the server
     if (m_velocity != m_previousVelocity) {
         if (m_velocity != sf::Vector2f()) {
             // Moving
@@ -100,11 +104,11 @@ void Player::update(Game& game, GameObjectCollection& gameObjectCollection, floa
         }
     }
 
-    m_position.x += m_velocity.x * deltaTime;
-    m_position.y += m_velocity.y * deltaTime;
+    // Update position
+    auto map = gameObjects.get<Map>("map");
+    setPosition(map->handleCollision(m_position, m_velocity * deltaTime, m_boundingBox));
 
-    m_drawable->skeleton->setPosition(m_position.x, m_position.y);
-
+    // Center camera around player
     auto view = game.getRenderWindow().getView();
     view.setCenter(m_position);
     game.getRenderWindow().setView(view);

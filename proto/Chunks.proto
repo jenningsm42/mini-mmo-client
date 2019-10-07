@@ -1,0 +1,18 @@
+syntax = 'proto3';
+
+message ChunkObject {
+    uint32 object_id = 1;
+    float x = 2;
+    float y = 3;
+}
+
+message ChunkRequest {
+    int32 chunk_x = 1;
+    int32 chunk_y = 2;
+}
+
+message ChunkResponse {
+    int32 chunk_x = 1;
+    int32 chunk_y = 2;
+    repeated ChunkObject objects = 3;
+}

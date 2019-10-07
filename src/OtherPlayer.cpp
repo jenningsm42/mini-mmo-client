@@ -1,3 +1,5 @@
+#include "GameObjectCollection.hpp"
+#include "Map.hpp"
 #include "OtherPlayer.hpp"
 
 OtherPlayer::OtherPlayer(Game& game, const Character& character) : Character(character) {
@@ -12,14 +14,11 @@ OtherPlayer::OtherPlayer(OtherPlayer&& other) : Character(std::move(other)) {
     m_velocity = other.m_velocity;
 }
 
-void OtherPlayer::update(Game& game, GameObjectCollection& gameObjectCollection, float deltaTime) noexcept {
-    Character::update(game, gameObjectCollection, deltaTime);
+void OtherPlayer::update(Game& game, GameObjectCollection& gameObjects, float deltaTime) noexcept {
+    Character::update(game, gameObjects, deltaTime);
 
-    m_position.x += m_velocity.x * deltaTime;
-    m_position.y += m_velocity.y * deltaTime;
-
-    m_drawable->skeleton->setPosition(m_position.x, m_position.y);
-    m_drawable->skeleton->updateWorldTransform();
+    auto map = gameObjects.get<Map>("map");
+    setPosition(map->handleCollision(m_position, m_velocity * deltaTime, m_boundingBox));
 }
 
 void OtherPlayer::setVelocity(const sf::Vector2f& position, const sf::Vector2f& velocity) noexcept {
@@ -39,7 +38,7 @@ void OtherPlayer::setVelocity(const sf::Vector2f& position, const sf::Vector2f& 
         }
     }
 
-    m_position = position;
+    setPosition(position);
     m_velocity = velocity;
 }
 

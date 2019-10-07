@@ -57,27 +57,31 @@ void LoginScene::initialize(Game& game) {
     }, usernameEditBox, passwordEditBox, std::ref(socket));
 
     // Message handlers
-    addMessageHandler(MessageType::LoginResponse, [&](Game& game, const Message& message) {
-        LoginResponse loginResponse;
-        message.getMessage(loginResponse);
+    addMessageHandler(
+        MessageType::LoginResponse,
+        [&](Game& game, GameObjectCollection&, const Message& message) {
+            LoginResponse loginResponse;
+            message.getMessage(loginResponse);
 
-        if (loginResponse.success()) {
-            std::cout << "Logged in!" << std::endl;
-            game.getSceneHandler().setScene(std::make_unique<CharacterSelectionScene>());
-            return;
-        } else {
-            std::cout << loginResponse.error_message() << std::endl;
-        }
-    });
+            if (loginResponse.success()) {
+                std::cout << "Logged in!" << std::endl;
+                game.getSceneHandler().setScene(std::make_unique<CharacterSelectionScene>());
+                return;
+            } else {
+                std::cout << loginResponse.error_message() << std::endl;
+            }
+        });
 
-    addMessageHandler(MessageType::RegisterResponse, [&](Game&, const Message& message) {
-        RegisterResponse registerResponse;
-        message.getMessage(registerResponse);
+    addMessageHandler(
+        MessageType::RegisterResponse,
+        [&](Game&, GameObjectCollection&, const Message& message) {
+            RegisterResponse registerResponse;
+            message.getMessage(registerResponse);
 
-        if (registerResponse.success()) {
-            std::cout << "Registered!" << std::endl;
-        } else {
-            std::cout << registerResponse.error_message() << std::endl;
-        }
-    });
+            if (registerResponse.success()) {
+                std::cout << "Registered!" << std::endl;
+            } else {
+                std::cout << registerResponse.error_message() << std::endl;
+            }
+        });
 }

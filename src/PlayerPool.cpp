@@ -55,6 +55,14 @@ std::string PlayerPool::getPlayerName(uint32_t id) noexcept {
     return m_players.at(id)->getName();
 }
 
+std::unordered_map<uint32_t, std::shared_ptr<OtherPlayer>>::iterator PlayerPool::begin() {
+    return m_players.begin();
+}
+
+std::unordered_map<uint32_t, std::shared_ptr<OtherPlayer>>::iterator PlayerPool::end() {
+    return m_players.end();
+}
+
 void PlayerPool::draw(sf::RenderTarget&, sf::RenderStates) const {
 }
 
@@ -148,7 +156,7 @@ void PlayerPool::handleOtherPlayerStop(const OtherPlayerStop& otherPlayerStop) {
     try {
         m_players.at(otherPlayerStop.player_id())->setVelocity(
             sf::Vector2f(otherPlayerStop.x(), otherPlayerStop.y()),
-            sf::Vector2f(0.f, 0.f));
+            sf::Vector2f());
     }
     catch (std::out_of_range exception) {
         // Player doesn't exist - ignore message

@@ -14,7 +14,7 @@
 class Game;
 class Socket;
 
-using MessageHandler = std::function<void(Game&, const Message&)>;
+using MessageHandler = std::function<void(Game&, GameObjectCollection&, const Message&)>;
 using MessageHandlerMap = std::unordered_map<MessageType, MessageHandler>;
 
 class Scene {

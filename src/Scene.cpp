@@ -6,7 +6,7 @@ bool Scene::handleMessage(Game& game, const Message& message) {
     }
 
     auto handler = m_handlers[message.getType()];
-    handler(game, message);
+    handler(game, m_objects, message);
 
     return true;
 }

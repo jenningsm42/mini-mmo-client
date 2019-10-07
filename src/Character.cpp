@@ -1,5 +1,6 @@
 #include "Character.hpp"
 #include "Game.hpp"
+#include "Player.hpp"
 
 #include <iostream>
 
@@ -14,6 +15,11 @@ Character::Character(
     m_id(id),
     m_name(name),
     m_position(x, y),
+    m_boundingBox(
+        x - Character::AABBWidth / 2.f,
+        y - Character::AABBHeight,
+        Character::AABBWidth,
+        Character::AABBHeight),
     m_bodyColor(bodyColor),
     m_shirtColor(shirtColor),
     m_legsColor(legsColor) {}
@@ -21,10 +27,11 @@ Character::Character(
 Character::Character(const Character& other) {
     m_id = other.m_id;
     m_name = other.m_name;
-    m_position = sf::Vector2f(other.m_position);
-    m_bodyColor = sf::Color(other.m_bodyColor);
-    m_shirtColor = sf::Color(other.m_shirtColor);
-    m_legsColor = sf::Color(other.m_legsColor);
+    m_position = other.m_position;
+    m_boundingBox = other.m_boundingBox;
+    m_bodyColor = other.m_bodyColor;
+    m_shirtColor = other.m_shirtColor;
+    m_legsColor = other.m_legsColor;
 
     if (other.m_skeletonData != nullptr) {
         m_skeletonData = other.m_skeletonData;
@@ -35,10 +42,11 @@ Character::Character(const Character& other) {
 Character::Character(Character&& other) {
     m_id = other.m_id;
     m_name = std::move(other.m_name);
-    m_position = std::move(other.m_position);
-    m_bodyColor = std::move(other.m_bodyColor);
-    m_shirtColor = std::move(other.m_shirtColor);
-    m_legsColor = std::move(other.m_legsColor);
+    m_position = other.m_position;
+    m_boundingBox = other.m_boundingBox;
+    m_bodyColor = other.m_bodyColor;
+    m_shirtColor = other.m_shirtColor;
+    m_legsColor = other.m_legsColor;
 
     if (other.m_skeletonData != nullptr) {
         m_animationStateData = std::move(other.m_animationStateData);
@@ -104,10 +112,6 @@ std::string Character::getName() const noexcept {
     return m_name;
 }
 
-sf::Vector2f Character::getPosition() const noexcept {
-    return m_position;
-}
-
 spine::AnimationState* Character::getAnimationState() {
     if (m_drawable == nullptr) {
         throw SkeletonNotLoadedException();
@@ -122,6 +126,28 @@ spine::Skeleton* Character::getSkeleton() {
     }
 
     return m_drawable->skeleton;
+}
+
+void Character::setPosition(const sf::Vector2f& position) noexcept {
+    m_position = position;
+
+    // Update skeleton
+    if (m_drawable != nullptr) {
+        m_drawable->skeleton->setPosition(m_position.x, m_position.y);
+        m_drawable->skeleton->updateWorldTransform();
+    }
+
+    // Update bounding box
+    m_boundingBox.left = m_position.x - Character::AABBWidth / 2.f;
+    m_boundingBox.top = m_position.y - Character::AABBHeight;
+}
+
+sf::Vector2f Character::getPosition() const noexcept {
+    return m_position;
+}
+
+sf::FloatRect Character::getBoundingBox() const noexcept {
+    return m_boundingBox;
 }
 
 void Character::setBodyColor(const sf::Color& color) noexcept {

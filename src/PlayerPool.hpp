@@ -33,6 +33,9 @@ public:
 
     std::string getPlayerName(uint32_t id) noexcept;
 
+    std::unordered_map<uint32_t, std::shared_ptr<OtherPlayer>>::iterator begin();
+    std::unordered_map<uint32_t, std::shared_ptr<OtherPlayer>>::iterator end();
+
 private:
     std::unordered_map<uint32_t, std::shared_ptr<OtherPlayer>> m_players;
 

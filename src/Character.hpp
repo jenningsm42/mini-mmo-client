@@ -32,9 +32,13 @@ public:
 
     uint32_t getId() const noexcept;
     std::string getName() const noexcept;
-    sf::Vector2f getPosition() const noexcept;
     spine::AnimationState* getAnimationState();
     spine::Skeleton* getSkeleton();
+
+    void setPosition(const sf::Vector2f&) noexcept;
+    sf::Vector2f getPosition() const noexcept;
+
+    sf::FloatRect getBoundingBox() const noexcept;
 
     void setBodyColor(const sf::Color&) noexcept;
     void setShirtColor(const sf::Color&) noexcept;
@@ -49,9 +53,12 @@ public:
     virtual float getZIndex() const noexcept override;
 
 protected:
+    static constexpr float AABBWidth = 50.f;
+    static constexpr float AABBHeight = 40.f;
     uint32_t m_id;
     std::string m_name;
     sf::Vector2f m_position;
+    sf::FloatRect m_boundingBox;
     sf::Color m_bodyColor;
     sf::Color m_shirtColor;
     sf::Color m_legsColor;

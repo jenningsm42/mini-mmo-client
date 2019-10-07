@@ -36,7 +36,7 @@ void Chatbox::handleChatMessage(Game&, GameObjectCollection& objects, const Mess
         name = m_name;
     }
     else {
-        auto playerPool = std::dynamic_pointer_cast<PlayerPool>(objects.get("playerPool"));
+        auto playerPool = objects.get<PlayerPool>("playerPool");
         name = playerPool->getPlayerName(receiveChatMessage.player_id());
     }
 
@@ -47,7 +47,7 @@ void Chatbox::update(Game& game, GameObjectCollection& objects, float) noexcept 
     auto& input = game.getInputHandler();
     auto& socket = game.getSocket();
 
-    auto player = std::dynamic_pointer_cast<Player>(objects.get("player"));
+    auto player = objects.get<Player>("player");
 
     if (input.getKeyTapped(sf::Keyboard::Enter)) {
         if (m_input->isFocused()) {

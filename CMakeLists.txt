@@ -15,11 +15,14 @@ set(SOURCE_FILES
         src/CharacterSelectionScene.cpp
         src/Chatbox.cpp
         src/ColorPickerWidget.cpp
+        src/DebugView.cpp
         src/Game.cpp
         src/GameObjectCollection.cpp
         src/GameScene.cpp
         src/InputHandler.cpp
         src/LoginScene.cpp
+        src/Map.cpp
+        src/MapObject.cpp
         src/Message.cpp
         src/OtherPlayer.cpp
         src/Player.cpp
@@ -33,6 +36,7 @@ set(PROTO_FILES
         proto/Characters.proto
         proto/Chat.proto
         proto/Login.proto
+        proto/Chunks.proto
         proto/PlayerJoin.proto
         proto/PlayerMove.proto
         proto/Register.proto

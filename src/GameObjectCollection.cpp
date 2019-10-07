@@ -1,7 +1,7 @@
+#include <algorithm>
+
 #include "GameObjectCollection.hpp"
 #include "GameObject.hpp"
-
-#include <algorithm>
 
 void GameObjectCollection::add(const std::string& name, std::shared_ptr<GameObject> object) {
     m_objects.emplace(name, object);
@@ -16,16 +16,8 @@ void GameObjectCollection::remove(const std::string &name) {
     }
 
     m_objectsDrawOrder.erase(
-            std::remove(m_objectsDrawOrder.begin(), m_objectsDrawOrder.end(), objectIter->second),
-            m_objectsDrawOrder.end());
-}
-
-std::shared_ptr<GameObject> GameObjectCollection::get(const std::string& name) const noexcept {
-    if (m_objects.find(name) != m_objects.end()) {
-        return m_objects.at(name);
-    }
-
-    return nullptr;
+        std::remove(m_objectsDrawOrder.begin(), m_objectsDrawOrder.end(), objectIter->second),
+        m_objectsDrawOrder.end());
 }
 
 void GameObjectCollection::sort() noexcept {

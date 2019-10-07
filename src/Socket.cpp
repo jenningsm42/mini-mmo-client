@@ -1,4 +1,5 @@
-#include "Socket.hpp"
+#include <iostream>
+#include <cstring>
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -11,7 +12,7 @@
 #include <unistd.h>
 #endif // _WIN32
 
-#include <cstring>
+#include "Socket.hpp"
 
 Socket::Socket() : m_socketDescriptor(-1) {
     auto result = 0;
