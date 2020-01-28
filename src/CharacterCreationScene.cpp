@@ -76,16 +76,18 @@ void CharacterCreationScene::initialize(Game& game) {
         nameEditBox);
 
     // Message handlers
-    addMessageHandler(MessageType::CreateCharacterResponse, [&](Game& game, const Message& message) {
-        CreateCharacterResponse createCharacterResponse;
-        message.getMessage(createCharacterResponse);
+    addMessageHandler(
+        MessageType::CreateCharacterResponse,
+        [&](Game& game, GameObjectCollection&, const Message& message) {
+            CreateCharacterResponse createCharacterResponse;
+            message.getMessage(createCharacterResponse);
 
-        if (createCharacterResponse.success()) {
-            game.getSceneHandler().setScene(std::make_unique<CharacterSelectionScene>());
-        } else {
-            std::cout << createCharacterResponse.error_message() << std::endl;
-        }
-    });
+            if (createCharacterResponse.success()) {
+                game.getSceneHandler().setScene(std::make_unique<CharacterSelectionScene>());
+            } else {
+                std::cout << createCharacterResponse.error_message() << std::endl;
+            }
+        });
 }
 
 void CharacterCreationScene::createCharacter(Game& game, tgui::EditBox::Ptr nameEditBox) {

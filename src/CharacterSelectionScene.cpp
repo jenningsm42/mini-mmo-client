@@ -21,50 +21,52 @@ void CharacterSelectionScene::initialize(Game& game) {
     });
 
     // Message handlers
-    addMessageHandler(MessageType::CharactersResponse, [&](Game& game, const Message& message) {
-        CharactersResponse charactersResponse;
-        message.getMessage(charactersResponse);
-        auto characters = charactersResponse.characters();
+    addMessageHandler(
+        MessageType::CharactersResponse,
+        [&](Game& game, GameObjectCollection&, const Message& message) {
+            CharactersResponse charactersResponse;
+            message.getMessage(charactersResponse);
+            auto characters = charactersResponse.characters();
 
-        auto& gui = game.getGui();
+            auto& gui = game.getGui();
 
-        for (auto& characterButton : m_characterButtons) {
-            gui.remove(characterButton.first);
-        }
-
-        m_characterButtons.clear();
-        for (int i = 0; i < characters.size(); i++) {
-            auto& character = characters[i];
-
-            auto c = Character(
-                character.character_id(),
-                character.name(),
-                character.x(),
-                character.y(),
-                sf::Color(character.body_color()),
-                sf::Color(character.shirt_color()),
-                sf::Color(character.legs_color()));
-
-            auto b = tgui::Button::create(character.name());
-
-            if (i > 0) {
-                auto previousButtonName = "characterButton" + std::to_string(i - 1);
-                auto leftLayout = previousButtonName + ".left";
-                auto topLayout = previousButtonName + ".bottom + 10";
-                b->setPosition({leftLayout, topLayout});
-            }
-            else {
-                b->setPosition({"newCharacterButton.left", "newCharacterButton.bottom + 20"});
+            for (auto& characterButton : m_characterButtons) {
+                gui.remove(characterButton.first);
             }
 
-            auto buttonName = "characterButton" + std::to_string(i);
-            gui.add(b, buttonName);
+            m_characterButtons.clear();
+            for (int i = 0; i < characters.size(); i++) {
+                auto& character = characters[i];
 
-            m_characterButtons.push_back(std::make_pair(b, c));
+                auto c = Character(
+                    character.character_id(),
+                    character.name(),
+                    character.x(),
+                    character.y(),
+                    sf::Color(character.body_color()),
+                    sf::Color(character.shirt_color()),
+                    sf::Color(character.legs_color()));
 
-            b->connect("pressed", [&](const Character c) {
-                game.getSceneHandler().setScene(std::make_unique<GameScene>(c));
-            }, c);
-        }
-    });
+                auto b = tgui::Button::create(character.name());
+
+                if (i > 0) {
+                    auto previousButtonName = "characterButton" + std::to_string(i - 1);
+                    auto leftLayout = previousButtonName + ".left";
+                    auto topLayout = previousButtonName + ".bottom + 10";
+                    b->setPosition({leftLayout, topLayout});
+                }
+                else {
+                    b->setPosition({"newCharacterButton.left", "newCharacterButton.bottom + 20"});
+                }
+
+                auto buttonName = "characterButton" + std::to_string(i);
+                gui.add(b, buttonName);
+
+                m_characterButtons.push_back(std::make_pair(b, c));
+
+                b->connect("pressed", [&](const Character c) {
+                    game.getSceneHandler().setScene(std::make_unique<GameScene>(c));
+                }, c);
+            }
+        });
 }

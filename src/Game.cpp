@@ -88,7 +88,7 @@ tgui::Gui& Game::getGui() noexcept {
 
 void Game::pollMessages() {
     auto messages = m_socket.pollMessages();
-    if (!messages.empty()) {
+    while (!messages.empty()) {
         auto message = messages.front();
         m_messageQueue.emplace(std::move(message));
         messages.pop();

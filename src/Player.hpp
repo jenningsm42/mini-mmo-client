@@ -16,9 +16,9 @@ public:
     void setControlsEnabled(bool enabled) noexcept;
 
 private:
-    const float m_radius = 30.f;
-    const float m_speed = 250.f;
-    const float m_pi = 3.14159f;
+    static constexpr float Speed = 250.f;
+    static constexpr float AABBWidth = 50.f;
+    static constexpr float AABBHeight = 40.f;
     bool m_controlsEnabled;
     sf::Vector2f m_velocity;
     sf::Vector2f m_previousVelocity;

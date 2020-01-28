@@ -13,7 +13,14 @@ public:
     void add(const std::string& name, std::shared_ptr<GameObject>);
     void remove(const std::string& name);
 
-    std::shared_ptr<GameObject> get(const std::string& name) const noexcept;
+    template <class T>
+    std::shared_ptr<T> get(const std::string& name) const {
+        if (m_objects.find(name) != m_objects.end()) {
+            return std::dynamic_pointer_cast<T>(m_objects.at(name));
+        }
+
+        return nullptr;
+    }
 
     // Sort should be called once per frame only
     void sort() noexcept;

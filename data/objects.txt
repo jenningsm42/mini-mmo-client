@@ -1,0 +1,2 @@
+# object_id aabb_width aabb_height texture_path
+0 84 20 rock.png
